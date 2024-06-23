@@ -1,0 +1,32 @@
+.active-menu > li > a > span{
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+}
+.menu-width.active-menu-width,
+.is-active-menu .top-aside{
+    width: 110px;
+}
+.menu-width,
+.top-aside{
+    width: 330px;
+    transition: all 0.5s ease-in-out;
+}
+.main-container{
+    margin-left: 330px;
+    width:calc(100% - 330px);
+    transition: all 0.5s ease-in-out;
+}
+.is-active-menu .main-container{
+    margin-left: 110px;
+    width:calc(100% - 110px);
+}
+.is-active-menu .link-logo{
+    display: none;
+}
+.bars-container{
+    width: 110px;
+}
+.link-logo{
+    display: block;
+    transition: all 0.5s ease-in-out;
+}
