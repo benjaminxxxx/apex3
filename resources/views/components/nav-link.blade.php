@@ -2,8 +2,8 @@
 
 @php
 $classes = $active
-           ? 'flex items-center p-2 text-indigo-900 hover:text-indigo-700 rounded-lg'
-           : 'flex items-center p-2 text-gray-900 hover:text-indigo-700 rounded-lg';
+           ? 'flex items-center p-2 text-cyan-700 bg-white font-bold hover:text-cyan-700 rounded-lg'
+           : 'flex items-center p-2 text-gray-900 hover:text-cyan-700 rounded-lg';
 @endphp
 
 <li x-data="{ open: false }">

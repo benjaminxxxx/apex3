@@ -50,8 +50,15 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jobs');
-        Schema::dropIfExists('job_batches');
-        Schema::dropIfExists('failed_jobs');
+        Schema::dropIfExists('jobs'); // Eliminar la tabla 'jobs'
+        Schema::dropIfExists('job_batches'); // Eliminar la tabla 'job_batches'
+        Schema::dropIfExists('failed_jobs'); // Eliminar la tabla 'failed_jobs'
+    
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('nickname'); // Eliminar la columna 'nickname' de la tabla 'users'
+            $table->dropColumn('lastname'); // Eliminar la columna 'lastname' de la tabla 'users'
+            $table->dropForeign(['role_id']); // Eliminar la clave foránea de 'role_id' en la tabla 'users'
+            $table->dropColumn('role_id'); // Eliminar la columna 'role_id' de la tabla 'users'
+        });
     }
 };

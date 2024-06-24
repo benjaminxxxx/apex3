@@ -9,7 +9,7 @@
                 </a>
                 <div class="bars-container md:w-[110px] text-center">
                     <button x-on:click="isOpenMenu = !isOpenMenu" type="button"
-                        class="inline-flex items-center p-2 text-sm text-gray-500 hover:text-indigo-700 ">
+                        class="inline-flex items-center p-2 text-sm text-gray-500 hover:text-cyan-700 ">
                         <span class="sr-only">Open sidebar</span>
                         <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -78,3 +78,4 @@
         </div>
     </div>
 </nav>
+
