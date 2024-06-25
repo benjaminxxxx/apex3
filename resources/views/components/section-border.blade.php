@@ -1,5 +1,3 @@
-<div class="hidden sm:block">
-    <div class="py-8">
-        <div class="border-t border-gray-200"></div>
-    </div>
+<div class="bg-gray-100 border p-2 md:p-3">
+    {{$slot}}
 </div>

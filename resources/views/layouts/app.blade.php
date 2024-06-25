@@ -18,6 +18,8 @@
     <!-- Styles -->
     <link href="{{asset('css/fontello.css')}}" rel="stylesheet" /> 
     <link href="{{asset('css/custom.css')}}" rel="stylesheet" /> 
+    <link href="{{asset('css/swal.css')}}" rel="stylesheet" /> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     @livewireStyles
 </head>
 
@@ -38,6 +40,7 @@
                    <x-nav-link href="{{route('usuarios')}}" active="{{request()->routeIs('usuarios')}}" icon="icon-user-3" menu="Miembros" />
                    <x-nav-link href="{{route('usuarios')}}" active="{{request()->routeIs('grupos')}}" icon="icon-signal-2" menu="Grupos" />
                    <x-nav-link href="{{route('usuarios')}}" active="{{request()->routeIs('eventos')}}" icon="icon-copy" menu="Eventos" />
+                   <x-nav-link href="{{route('charts')}}" active="{{request()->routeIs('charts')}}" icon="icon-analytics" menu="Gráficos" />
                    <x-nav-link href="{{route('usuarios')}}" active="{{request()->routeIs('documentos')}}" icon="icon-telegram-2" menu="Documentos" />
                    <x-nav-link href="{{route('usuarios')}}" active="{{request()->routeIs('noticias')}}" icon="icon-feather-2" menu="Noticias" />
                    <x-nav-link href="{{route('usuarios')}}" active="{{request()->routeIs('contacto')}}" icon="icon-email-3" menu="Contacto" />
@@ -46,7 +49,7 @@
             </div>
         </aside>
 
-        <div class="p-4 main-container h-screen mt-20" style="box-shadow:inset 0 0 15px 5px #e4e4e4">
+        <div class="p-4 main-container min-h-screen mt-20" style="box-shadow:inset 0 0 15px 5px #e4e4e4">
             <!-- Page Content -->
             <div>
                 {{$header}}
@@ -59,7 +62,7 @@
     </div>
 
     @stack('modals')
-
+    
     @livewireScripts
 </body>
 

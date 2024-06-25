@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\GraficosController;
 
 
 Route::middleware([
@@ -20,4 +20,8 @@ Route::middleware([
     Route::get('/usuarios', function () {
         return view('admin.usuarios');
     })->name('usuarios');
+
+    Route::get('/graficos', [GraficosController::class,'index'])->name('charts');
+    Route::post('/graficos/importar', [GraficosController::class,'import_document'])->name('charts.import');
+    Route::post('/graficos/guardar', [GraficosController::class,'store'])->name('charts.store');
 });

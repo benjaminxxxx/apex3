@@ -1,0 +1,17 @@
+button.swal2-styled.swal2-confirm{
+    background-color: #0E7490;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+div.swal2-header {
+    padding: 0 0.4em;
+}
+h2.swal2-title {
+    font-size: 1.275em;
+}
