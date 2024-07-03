@@ -1,5 +1,9 @@
 button.swal2-styled.swal2-confirm{
     background-color: #0E7490;
+    
+}
+button.swal2-styled.swal2-cancel,
+button.swal2-styled.swal2-confirm{
     font-size: 0.75rem;
     line-height: 1rem;
     font-weight: 600;
@@ -8,7 +12,6 @@ button.swal2-styled.swal2-confirm{
     padding-left: 1rem;
     padding-right: 1rem;
 }
-
 div.swal2-header {
     padding: 0 0.4em;
 }

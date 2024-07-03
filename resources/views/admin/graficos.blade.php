@@ -10,6 +10,18 @@
     </x-slot>
 
     <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-2 md:p-10 mt-2 md:mt-5">
+        @if (session('error'))
+            <div class="border shadow-md mb-5">
+                <div class="bg-red-600 text-white p-2 md:p-3 rounded border">
+                    {{ session('error') }}
+                </div>
+            </div>
+        @endif
+        @if ($chart != null)
+            <div class="border shadow-md mb-5">
+                <h2 class="p-2 font-bold bg-green-200">Editando Gráfico: {{ $chart->title }}</h2>
+            </div>
+        @endif
         <div class="border shadow-md mb-5">
             <x-sectionheader-border>
                 Data
@@ -49,34 +61,34 @@
                     <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2">
                         <x-label for="chart_type" value="Tipo" />
                         <x-select name="chart_type" id="chart_type">
-                            <option value="bar">Bar </option>
-                            <option value="line">Line </option>
-                            <option value="bubble">Bubble </option>
-                            <option value="doughnut">Doughnut </option>
-                            <option value="pie">Pie </option>
-                            <option value="polarArea">Polar area</option>
-                            <option value="radar">Radar </option>
-                            <option value="scatter">Scatter </option>
+                            <option value="bar" {{($chart&&$chart->type=='bar'?'selected':'')}}>Bar </option>
+                            <option value="line" {{($chart&&$chart->type=='line'?'selected':'')}}>Line </option>
+                            <option value="bubble" {{($chart&&$chart->type=='bubble'?'selected':'')}}>Bubble </option>
+                            <option value="doughnut" {{($chart&&$chart->type=='doughnut'?'selected':'')}}>Doughnut </option>
+                            <option value="pie" {{($chart&&$chart->type=='pie'?'selected':'')}}>Pie </option>
+                            <option value="polarArea" {{($chart&&$chart->type=='polarArea'?'selected':'')}}>Polar area</option>
+                            <option value="radar" {{($chart&&$chart->type=='radar'?'selected':'')}}>Radar </option>
+                            <option value="scatter" {{($chart&&$chart->type=='scatter'?'selected':'')}}>Scatter </option>
                         </x-select>
                     </div>
                     <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2">
                         <x-label for="chart_height" value="Alto" />
-                        <x-input name="chart_height" id="chart_height" value="100" />
+                        <x-input name="chart_height" id="chart_height" value="{{($chart)?$chart->height:'100'}}" />
                     </div>
                     <div class="w-full sm:w-1/2 md:w-1/2 p-2">
                         <x-label for="chart_legend" value="Titulo" />
-                        <x-input name="chart_legend" id="chart_legend" value="Mi título" />
+                        <x-input name="chart_legend" id="chart_legend" value="{{($chart)?$chart->title:'mMi título'}}" />
                     </div>
                     <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2">
                         <x-label for="parse_in" value="Analizar datos en" />
                         <x-select name="parse_in" id="parse_in">
-                            <option value="columns">Columnas </option>
-                            <option value="rows">Filas </option>
+                            <option value="columns" {{($chart&&$chart->order_by=='columns'?'selected':'')}}>Columnas </option>
+                            <option value="rows" {{($chart&&$chart->order_by=='rows'?'selected':'')}}>Filas </option>
                         </x-select>
                     </div>
                     <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2">
                         <div class="flex items-center mb-4">
-                            <input name="showlabels" id="showlabels" type="checkbox"
+                            <input name="showlabels" id="showlabels" type="checkbox" {{($chart&&$chart->showlabels=='0'?'':'checked')}}
                                 class="w-4 h-4 text-cyan-600 bg-gray-100 border-gray-300 rounded focus:ring-cyan-500 dark:focus:ring-cyan-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                             <label for="showlabels"
                                 class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Mostrar
@@ -85,7 +97,7 @@
                     </div>
                     <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2">
                         <div class="flex items-center mb-4">
-                            <input name="showlegend" id="showlegend" type="checkbox"
+                            <input name="showlegend" id="showlegend" type="checkbox" {{($chart&&$chart->showlegend=='0'?'':'checked')}}
                                 class="w-4 h-4 text-cyan-600 bg-gray-100 border-gray-300 rounded focus:ring-cyan-500 dark:focus:ring-cyan-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                             <label for="showlegend"
                                 class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Mostrar
@@ -96,9 +108,18 @@
                         <x-button id="generar_grafico">
                             Previsualizar Gráfico
                         </x-button>
-                        <x-button id="guardar_grafico" class="ml-2" style="display:none">
-                            Guardar Gráfico
-                        </x-button>
+                        @if ($chart == null)
+                            <x-button id="guardar_grafico" class="ml-2" style="display:none">
+                                Guardar Gráfico
+                            </x-button>
+                        @else
+                            <x-button id="guardar_grafico" class="ml-2" style="display:none">
+                                Editar Gráfico
+                            </x-button>
+                            <x-secondary-a href="{{ route('charts') }}" class="ml-2">
+                                Cancelar Edición
+                            </x-secondary-a>
+                        @endif
                     </div>
                 </div>
 
@@ -118,24 +139,26 @@
                     </tr>
                 </x-slot>
                 <x-slot name="tbody">
-                    @foreach ($charts as $chart)
-                        <x-tr>
-                            <x-th value="{{ $chart->title }}" />
-                            <x-th value="{{ $chart->type }}" />
-                            <x-th value="{{ $chart->height }}" />
-                            <x-th value="{{ $chart->order_by }}" />
-                            <x-th value="{{ $chart->showlabels=='0'?'No':'Si' }}" />
-                            <x-th value="{{ $chart->showlegend=='0'?'No':'Si' }}" />
+                    @foreach ($charts as $chartdata)
+                        <x-tr class="{{ $chart && $chartdata->chart_id == $chart->chart_id ? 'bg-cyan-100' : '' }}">
+                            <x-th value="{{ $chartdata->title }}" />
+                            <x-th value="{{ $chartdata->type }}" />
+                            <x-th value="{{ $chartdata->height }}" />
+                            <x-th value="{{ $chartdata->order_by }}" />
+                            <x-th value="{{ $chartdata->showlabels == '0' ? 'No' : 'Si' }}" />
+                            <x-th value="{{ $chartdata->showlegend == '0' ? 'No' : 'Si' }}" />
                             <td>
-                                <x-secondary-button wire:click="edit({{ $chart->id }})">
-                                    <i class="icon-pencil"></i>
-                                </x-secondary-button>  
-                                <x-success-button>
-                                    <i class="icon-share"></i>
-                                </x-success-button>                               
-                                <x-danger-button wire:click="confirmDelete({{ $chart->id }})" class="ml-1">
-                                    <i class="icon-trash"></i>
-                                </x-danger-button>
+                                
+                                    <x-secondary-a href="{{ route('charts', $chartdata->chart_id) }}">
+                                        <i class="icon-pencil"></i>
+                                    </x-secondary-a>
+                                    <x-success-button>
+                                        <i class="icon-share"></i>
+                                    </x-success-button>
+                                    <x-danger-button data-chart="{{ $chartdata->chart_id }}" class="show_confirm_delete ml-1">
+                                        <i class="icon-trash"></i>
+                                    </x-danger-button>
+                               
                             </td>
                         </x-tr>
                     @endforeach
@@ -149,7 +172,17 @@
 
     <script>
         const container = document.querySelector('#gridData');
+        let chartData = @json($chart->data ?? null);
+        let sampleData = [
+            ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
+            ['Juan', '12', '12', '12', '12.50', '13.50', '14'],
+            ['Maria', '210', '220', '230', '240', '250', '260'],
+            ['Jose', '300', '310', '320', '330', '340', '350'],
+            ['Ana', '400', '410', '420', '430', '440', '450'],
+            ['Luis', '500', '510', '520', '530', '540', '550']
+        ];
 
+        let dataToLoad = chartData ? JSON.parse(chartData) : sampleData;
         const hot = new Handsontable(container, {
             colHeaders: true,
             rowHeaders: true,
@@ -159,7 +192,8 @@
             minSpareRows: 1,
             minSpareCols: 1,
             contextMenu: true,
-            stretchH: 'all'
+            stretchH: 'all',
+            data: dataToLoad,
         });
 
 
@@ -215,7 +249,49 @@
             }
         });
         document.addEventListener('DOMContentLoaded', function() {
+
+            const deleteButtons = document.querySelectorAll('.show_confirm_delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const chartId = this.getAttribute('data-chart');
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: 'Esta acción eliminará el gráfico permanentemente.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, eliminar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            axios.delete(`/graficos/eliminar/${chartId}`)
+                                .then(response => {
+                                    console.log(response.data);
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Éxito',
+                                        text: response.data.message
+                                    });
+                                    const trToDelete = button.closest('tr');
+                                    if (trToDelete) {
+                                        trToDelete.remove();
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'Ocurrió un error al intentar eliminar el gráfico.'
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+
             var totalDataGeneral = 0;
+
             function obtenerHeadersValidos(data) {
                 const headers = [];
 
@@ -279,12 +355,9 @@
             function generarMatrizDatosInverso(cols, rows, data) {
                 const matrizDatosInversa = [];
 
-                // Crear un array vacío para cada columna de datos
                 for (let i = 0; i < cols.length; i++) {
                     matrizDatosInversa.push(new Array(rows.length).fill(null));
                 }
-
-                // Llenar la matriz de datos inversa
                 for (let i = 0; i < cols.length; i++) {
                     const colHeader = cols[i];
                     const colIndex = data[0].indexOf(colHeader);
@@ -373,7 +446,7 @@
                 config.data.labels = headers;
                 config.data.datasets = totalData;
                 config.type = chartType;
-                if(totalDataGeneral>0){
+                if (totalDataGeneral > 0) {
                     document.getElementById('guardar_grafico').style.display = 'inline-block';
                 }
 
@@ -396,13 +469,13 @@
             document.getElementById('generar_grafico').addEventListener('click', updateChart);
             document.getElementById('guardar_grafico').addEventListener('click', function() {
 
-                if(totalDataGeneral==0){
+                if (totalDataGeneral == 0) {
                     Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: "Debe generar información primero",
-                        });
-                        return;
+                        icon: 'error',
+                        title: 'Error',
+                        text: "Debe generar información primero",
+                    });
+                    return;
                 }
                 const chartType = document.getElementById('chart_type').value;
                 const chartHeight = document.getElementById('chart_height').value;
@@ -412,7 +485,10 @@
                 const chartTitle = document.getElementById('chart_legend').value;
                 const data = hot.getData();
 
+                let chartId = @json($chart->chart_id ?? 0);
+
                 axios.post('{{ route('charts.store') }}', {
+                        chart_id: chartId,
                         data: JSON.stringify(data),
                         type: chartType,
                         height: chartHeight,
@@ -423,16 +499,20 @@
                     })
                     .then(function(response) {
                         console.log(response.data);
-                        
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Éxito',
                             text: response.data.message,
+                        }).then((result) => {
+                            if (result.isConfirmed || result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.esc) {                            
+                                window.location.href = '{{route("charts")}}';
+                            }
                         });
                     })
                     .catch(function(error) {
                         console.error(error);
-                       
+
                         let errorMessage = 'Ocurrió un error,';
                         if (error.response && error.response.data && error.response.data.error) {
                             errorMessage = error.response.data.error;

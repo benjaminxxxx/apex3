@@ -9,11 +9,27 @@ use App\Models\Chart;
 
 class GraficosController extends Controller
 {
-    public function index(){
+    public function index($chart_id = null){
         $charts = Chart::all();
+        
         $data = [
-            'charts'=>$charts
+            'charts'=>$charts,
+            'chart'=>null
         ];
+
+        if ($chart_id) {
+            $user_id = Auth::id();
+            $chart = Chart::where('chart_id', $chart_id)
+                          ->where('user_id', $user_id)
+                          ->first();
+            
+            if (!$chart) {
+                return redirect()->route('charts')->with('error', 'Gráfico no encontrado.');
+            }else{
+                $data['chart'] = $chart;
+            }
+        }
+        
         return view('admin.graficos',$data);
     }
     public function import_document(Request $request)
@@ -37,6 +53,7 @@ class GraficosController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
+            'chart_id' => 'nullable',
             'data' => 'required|json',
             'type' => 'required|string',
             'height' => 'required|integer',
@@ -47,22 +64,54 @@ class GraficosController extends Controller
         ]);
     
         try {
-            $chart = Chart::create([
-                'data' => $validatedData['data'],
-                'user_id' => Auth::id(),
-                'type' => $validatedData['type'],
-                'height' => $validatedData['height'],
-                'title' => $validatedData['title'],
-                'order_by' => $validatedData['order_by'],
-                'showlabels' => $validatedData['showlabels'],
-                'showlegend' => $validatedData['showlegend'],
-            ]);
+            if (isset($validatedData['chart_id']) && $validatedData['chart_id'] != 0) {
+                // Actualizar el gráfico existente
+                $chart = Chart::where('chart_id', $validatedData['chart_id'])
+                              ->where('user_id', Auth::id())
+                              ->firstOrFail();
     
-            return response()->json(['message' => '¡Chart guardado correctamente!', 'chart' => $chart], 201);
+                $chart->update([
+                    'data' => $validatedData['data'],
+                    'type' => $validatedData['type'],
+                    'height' => $validatedData['height'],
+                    'title' => $validatedData['title'],
+                    'order_by' => $validatedData['order_by'],
+                    'showlabels' => $validatedData['showlabels'],
+                    'showlegend' => $validatedData['showlegend'],
+                ]);
+                return response()->json(['message' => '¡Chart actualizado correctamente!', 'chart' => $chart], 201);
+            } else {
+                // Crear un nuevo gráfico
+                $chart = Chart::create([
+                    'data' => $validatedData['data'],
+                    'user_id' => Auth::id(),
+                    'type' => $validatedData['type'],
+                    'height' => $validatedData['height'],
+                    'title' => $validatedData['title'],
+                    'order_by' => $validatedData['order_by'],
+                    'showlabels' => $validatedData['showlabels'],
+                    'showlegend' => $validatedData['showlegend'],
+                ]);
+                return response()->json(['message' => '¡Chart guardado correctamente!', 'chart' => $chart], 201);
+            }
+    
+            
     
         } catch (\Exception $e) {
             return response()->json(['error' => 'Hubo un error al guardar el gráfico: ' . $e->getMessage()], 500);
         }
+    }
+    public function destroy($chart_id)
+    {
+        $chart = Chart::where('chart_id', $chart_id)
+                      ->where('user_id', auth()->id())
+                      ->first();
+
+        if (!$chart) {
+            return response()->json(['error' => 'Gráfico no encontrado.'], 404);
+        }
+        $chart->delete();
+        return response()->json(['message' => 'Gráfico eliminado correctamente.']);
     }
     private function processCSV($file)
     {

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('charts', function (Blueprint $table) {
             $table->id();
+            $table->char('chart_id', 10)->unique();
             $table->text('data');
             $table->unsignedBigInteger('user_id');
             $table->string('type');
