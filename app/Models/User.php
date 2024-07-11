@@ -30,7 +30,12 @@ class User extends Authenticatable
         'role_id',
         'email',
         'password',
-        'status'
+        'user_code',
+        'birthdate',
+        'phone',
+        'address',
+        'status',
+        'created_by'
     ];
 
     /**
@@ -65,5 +70,41 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function projects()
+    {
+        return $this->hasMany(Project::class, 'administrator_id');
+    }
+    /*
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class);
+    }*/
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+    public function managedProjects()
+    {
+        return $this->belongsToMany(Project::class, 'manager_project', 'manager_id', 'project_id');
+    }
+    public function assignedProjects($managerId = null)
+    {
+        return $this->hasMany(ProjectManagerPartner::class, 'partner_id')
+            ->when($managerId, function ($query) use ($managerId) {
+                $query->where('manager_id', $managerId);
+            });
+    }
+    /*
+    public function socios()
+    {
+        return $this->belongsToMany(Group::class, 'group_partner', 'partner_id', 'group_id');
+    }*/
+
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id')
+            ->wherePivot('status', 'accepted')
+            ->withTimestamps();
     }
 }

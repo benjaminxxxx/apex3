@@ -12,20 +12,20 @@ const io = require("socket.io")(server, {
   }
 });
 
-let connectedUsers = {}; // Object to store connected users with their data
+let connectedUsers = {};
+let userSockets = {};
 
 io.on('connection', (socket) => {
   const handshakeData = socket.request;
-  const userId = handshakeData._query['id'];
-  const userName = handshakeData._query['name'];
-  const userAvatar = handshakeData._query['avatar'];
+  const userId = handshakeData._query['user'];
+
+  const userId2 = socket.handshake.query.user;
+  userSockets[userId2] = socket.id;
 
   // Check if user already exists in the connectedUsers object
   if (!connectedUsers[userId]) {
     connectedUsers[userId] = {
       id: userId,
-      name: userName,
-      avatar: userAvatar,
       connections: [socket.id] // Store socket id in connections array
     };
   } else {
@@ -36,9 +36,7 @@ io.on('connection', (socket) => {
 
   // Emit the updated user list with data
   io.emit('users', Object.values(connectedUsers).map(user => ({
-    id: user.id,
-    name: user.name,
-    avatar: user.avatar
+    id: user.id
   })));
 
   socket.on('disconnect', () => {
@@ -58,6 +56,23 @@ io.on('connection', (socket) => {
       name: user.name,
       avatar: user.avatar
     })));
+  });
+  socket.on('getConnectedUsers', () => {
+
+    io.emit('users', Object.values(connectedUsers).map(user => ({
+      id: user.id,
+      name: user.name,
+      avatar: user.avatar
+    })));
+  });
+
+
+  socket.on('newMessage', data => {
+    console.log(data.userId);
+    const recipientSocketId = userSockets[data.userId];
+    if (recipientSocketId) {
+      io.to(recipientSocketId).emit('receiveMessage', data);
+    }
   });
 });
 

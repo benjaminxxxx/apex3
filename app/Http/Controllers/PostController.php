@@ -29,4 +29,21 @@ class PostController extends Controller
 
         return view('post.new', ['post' => $post]);
     }
+    public function evento($slug = null)
+    {
+
+        $post = Post::where('slug', $slug)->first();
+
+        if (!$post) {
+            return redirect()->route('eventos');
+        }
+
+        return view('post.event', ['post' => $post]);
+    }
+    public function eventos()
+    {
+
+        $posts = Post::where('type', 'evento')->get();
+        return view('eventos', ['posts' => $posts]);
+    }
 }

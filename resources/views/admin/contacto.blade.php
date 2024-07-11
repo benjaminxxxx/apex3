@@ -13,13 +13,18 @@
                 </h2>
 
                 <x-card class="w-full">
-                    @livewire('admin-contact')
+                    @if (Auth::user()->role_id == '1')
+                        @livewire('admin-contact')
+                    @else
+                        @livewire('contact-us')
+                    @endif
                 </x-card>
             </div>
             <div class="w-full lg:w-[400px] lg:pl-3">
-                <x-card>
-                    @livewire('admin-active-users')
-                </x-card>
+                @if (Auth::user()->role_id != '1')
+                    <livewire:contact-information />
+                @endif
+                <livewire:chat />
             </div>
         </div>
     </div>

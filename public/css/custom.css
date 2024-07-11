@@ -105,7 +105,7 @@
 
 /* Large devices (large desktops, 992px and up) */
 @media (min-width: 1200px) {
-    input[type="text"],
+    /*input[type="text"],
     input[type="number"],
     input[type="email"],
     textarea {
@@ -118,7 +118,7 @@
         font-size: 0.9rem !important;
         margin-bottom: 1.5rem;
     
-    }
+    }*/
 }
 
 /* Extra large devices (large desktops, 1200px and up) */

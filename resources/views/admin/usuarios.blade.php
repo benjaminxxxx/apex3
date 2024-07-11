@@ -1,15 +1,26 @@
 <x-app-layout>
     <x-slot name="title">
-        Administración de Asociados
+
+        @if (Auth::user()->role_id == '2')
+            Administración de Gestores
+        @elseif (Auth::user()->role_id == '3')
+            Administración de Asociados
+        @else
+            Administración de Asociados
+        @endif
     </x-slot>
 
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Administración de Asociados
+            @if (Auth::user()->role_id == '2')
+                Administración de Gestores
+            @elseif (Auth::user()->role_id == '3')
+                Administración de Asociados
+            @else
+                Administración de Asociados
+            @endif
         </h2>
     </x-slot>
 
-    <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-2 md:p-10 mt-2 md:mt-5">
-        @livewire("admin-user")
-    </div>
+    <livewire:admin-user />
 </x-app-layout>

@@ -24,8 +24,7 @@ class ContactFormSubmission extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            //from: new Address('benuserxxx@gmail.com','Benjaminncho QUispe'),
-            subject: 'Contact Form Submission',
+            subject: 'Nueva Solicitud de contacto de Apexally',
         );
     }
 

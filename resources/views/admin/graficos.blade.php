@@ -8,7 +8,7 @@
             Administración de Gráficos estadisticos
         </h2>
     </x-slot>
-
+    <livewire:chat :popup="true"/>
     <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-2 md:p-10 mt-2 md:mt-5">
         @if (session('error'))
             <div class="border shadow-md mb-5">

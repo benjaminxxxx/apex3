@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->string('role_name');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('number');
+            $table->string('number1')->nullable();
+            $table->text('address');
             $table->timestamps();
         });
     }
@@ -22,8 +26,7 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-    {    
-        // Ahora podemos eliminar la tabla 'roles'
-        Schema::dropIfExists('roles');
+    {
+        Schema::dropIfExists('contacts');
     }
 };

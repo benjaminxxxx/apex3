@@ -24,9 +24,17 @@ class AdminPost extends Component
     public $cover_image;
     public $allow_comments;
     public $excerpt;
-    public $type;
+    public $type_post;
     public $isFormOpen;
     public $types;
+    public $starts_at;
+    public $ends_at;
+    public $organizer;
+    public $phone;
+    public $email;
+    public $location;
+    public $website;
+    public $map;
     public $image_path;
     public $isDeleting;
     public $postIdToDelete;
@@ -34,9 +42,9 @@ class AdminPost extends Component
     public function mount($type = null)
     {
        
-        $this->type = $type;
+        $this->type_post = $type;
 
-        if($this->type !=null){
+        if($this->type_post !=null){
             $this->isFormOpen = true;
         }
         $this->categories = Category::with('children')->whereNull('parent_id')->get();
@@ -53,6 +61,18 @@ class AdminPost extends Component
         if ($this->cover_image) {
             $rules['cover_image'] = 'image|max:1024'; // 1MB Max
         }
+
+        if ($this->type_post == 'evento') {
+            $rules += [
+                'starts_at' => 'required|date',
+                'email' => 'nullable|email',
+            ];
+    
+            if ($this->ends_at) {
+                $rules['ends_at'] = 'after:starts_at';
+            }
+        }
+
         return $rules;
     }
 
@@ -66,6 +86,10 @@ class AdminPost extends Component
         'slug.required' => 'El slug es obligatorio.',
         'slug.unique' => 'El slug ya está en uso.',
         'allow_comments' => 'boolean',
+        'starts_at.required' => 'La fecha de inicio es obligatoria para eventos.',
+        'starts_at.date' => 'La fecha de inicio debe ser una fecha válida.',
+        'email.email' => 'El formato del correo electrónico es inválido.',
+        'ends_at.after' => 'La fecha de cierre debe ser posterior a la fecha de inicio.',
     ];
     public function render()
     {
@@ -76,6 +100,9 @@ class AdminPost extends Component
             
         return view('livewire.admin-post');
     }
+    public function settype(){
+        $this->render();
+    }
     public function updateSlug()
     {
         $this->slug = Str::slug($this->title);
@@ -84,6 +111,7 @@ class AdminPost extends Component
     {
 
         try {
+           
             $this->validate();
 
             $allowCommentsValue = $this->allow_comments ? 1 : 0;
@@ -93,42 +121,51 @@ class AdminPost extends Component
                 $coverImagePath = $this->storeCoverImage($this->cover_image);
             }
 
+            $postData = [
+                'title' => $this->title,
+                'content' => $this->content,
+                'slug' => $this->slug,
+                'cover_image' => $coverImagePath,
+                'allow_comments' => $allowCommentsValue,
+                'excerpt' => $this->excerpt,
+                'type' => $this->type_post,
+            ];
+            
+            if ($this->type_post == 'evento') {
+                $postData += [
+                    'starts_at' => $this->starts_at,
+                    'ends_at' => $this->ends_at,
+                    'organizer' => $this->organizer,
+                    'phone' => $this->phone,
+                    'email' => $this->email,
+                    'location' => $this->location,
+                    'website' => $this->website,
+                    'map' => $this->map,
+                ];
+            }
+
             if ($this->isEditing) {
                 
                 $post = Post::findOrFail($this->postId);
                 if ($coverImagePath!=null && $coverImagePath != $post->cover_image) {
+                   
                     Storage::delete('public/' . $post->cover_image);
                 }
                 if ($coverImagePath==null && $this->image_path==null && $post->cover_image!=null) {
+                   
                     Storage::delete('public/' . $post->cover_image);
                 }
                 if($coverImagePath==null){
-                    $coverImagePath=$this->image_path;
+                    $postData['cover_image'] = $this->image_path;
                 }
-    
-                $post->update([
-                    'title' => $this->title,
-                    'content' => $this->content,
-                    'slug' => $this->slug,
-                    'cover_image' => $coverImagePath,
-                    'allow_comments' => $allowCommentsValue,
-                    'excerpt' => $this->excerpt,
-                    'type' => $this->type,
-                ]);
-    
+
+                $post->update($postData);    
                 $post->categories()->sync($this->selected_categories);
                 session()->flash('message', 'Post actualizado con éxito.');
             } else {
-                $post = Post::create([
-                    'title' => $this->title,
-                    'content' => $this->content,
-                    'slug' => $this->slug,
-                    'user_id' => Auth::id(),
-                    'cover_image' => $coverImagePath,
-                    'allow_comments' => $allowCommentsValue,
-                    'excerpt' => $this->excerpt,
-                    'type' => $this->type,
-                ]);
+
+                $postData['user_id'] = Auth::id();
+                $post = Post::create($postData);
                 $post->categories()->sync($this->selected_categories);
                 session()->flash('message', 'Post guardado con éxito.');
             }
@@ -178,7 +215,19 @@ class AdminPost extends Component
         $this->allow_comments = (bool) $post->allow_comments;
         $this->excerpt = $post->excerpt;
         $this->selected_categories = $post->categories->pluck('id')->toArray(); 
-        $this->type = $post->type;
+        $this->type_post = $post->type;
+
+        //CAMPOS PARA EVENTOS
+        $this->starts_at = $post->starts_at;
+        $this->ends_at = $post->ends_at;
+        $this->organizer = $post->organizer;
+        $this->phone = $post->phone;
+        $this->email = $post->email;
+        $this->location = $post->location;
+        $this->website = $post->website;
+        $this->map = $post->map;
+        
+
         $this->isEditing = true;
         $this->isFormOpen = true;
         $this->dispatch('tinymce-update', $this->content);
@@ -240,7 +289,7 @@ class AdminPost extends Component
         $this->allow_comments = false;
         $this->excerpt = null;
         $this->selected_categories = []; 
-        $this->type = 'noticia';
+        $this->type_post = 'noticia';
         $this->isEditing = false;
         $this->isFormOpen = false;
         $this->dispatch('tinymce-update', '');

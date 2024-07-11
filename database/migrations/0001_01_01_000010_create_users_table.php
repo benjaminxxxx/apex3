@@ -21,8 +21,14 @@ return new class extends Migration
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
             $table->string('nickname')->unique()->nullable();
-            $table->string('lastname')->nullable()->after('name');
+            $table->string('lastname')->nullable();
             $table->foreignId('role_id')->constrained('roles')->nullable();
+            $table->enum('status', ['1', '0','2'])->default('1');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->date('birthdate')->nullable();  // Fecha de nacimiento
+            $table->string('phone')->nullable();  // Teléfono de contacto
+            $table->string('address')->nullable();  // Dirección
+            $table->string('user_code', 20)->unique();
             $table->timestamps();
         });
 

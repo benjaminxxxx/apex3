@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+
 //use Maatwebsite\Excel\Facades\Excel;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -13,9 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        /*$middleware->alias([
-            'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        ]);*/
+        //$middleware->append(CheckUserStatus::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

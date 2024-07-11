@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('order_by', ['columns', 'rows']);
             $table->enum('showlabels', ['0', '1']);
             $table->enum('showlegend', ['0', '1']);
+            $table->enum('status', ['1', '0','2'])->default('1');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

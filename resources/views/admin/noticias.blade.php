@@ -6,7 +6,7 @@
     <x-slot name="header">
 
     </x-slot>
-
+    <livewire:chat :popup="true"/>
     <div class="p-2 md:py-10 md:pr-10 md:pl-5 mt-2 md:mt-5">
         <div class="lg:flex">
             <div class="lg:flex-1 justify-center ">

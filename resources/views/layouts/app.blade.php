@@ -11,6 +11,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -19,6 +22,7 @@
     <link href="{{ asset('css/fontello.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/swal.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     @livewireStyles
 </head>
@@ -37,17 +41,26 @@
                 <ul class="space-y-2 font-medium"
                     x-bind:class="{ 'active-menu': isOpenMenu, 'inactive-menu': !isOpenMenu }">
 
-                    <x-nav-link href="{{ route('usuarios') }}" active="{{ request()->routeIs('actividad') }}"
-                        icon="icon-telegram-2" menu="Actividad" />
-                    <x-nav-link href="{{ route('usuarios') }}" active="{{ request()->routeIs('usuarios') }}"
+                    <x-nav-link href="{{ route('dashboard') }}" active="{{ request()->routeIs('dashboard') }}"
+                        icon="icon-home-3" menu="Escritorio" />
+                        <x-nav-link href="{{ route('projects') }}" active="{{ request()->routeIs('projects') }}"
+                            icon="icon-signal-2" menu="Proyectos" />
+                    @if(Auth::user()->role_id=='2')
+                    <x-nav-link href="{{ route('managers') }}" active="{{ request()->routeIs('managers') }}"
+                        icon="icon-user-3" menu="Gestores" />
+                    @elseif(Auth::user()->role_id=='3')
+                    <x-nav-link href="{{ route('partners') }}" active="{{ request()->routeIs('partners') }}"
+                        icon="icon-user-3" menu="Socios" />
+                    @else
+                    <x-nav-link href="{{ route('users') }}" active="{{ request()->routeIs('users') }}"
                         icon="icon-user-3" menu="Miembros" />
-                    <x-nav-link href="{{ route('usuarios') }}" active="{{ request()->routeIs('grupos') }}"
-                        icon="icon-signal-2" menu="Grupos" />
-                    <x-nav-link href="{{ route('usuarios') }}" active="{{ request()->routeIs('eventos') }}"
+                    @endif
+                    
+                    <x-nav-link href="{{ route('eventos') }}" active="{{ request()->routeIs('eventos') }}"
                         icon="icon-copy" menu="Eventos" />
                     <x-nav-link href="{{ route('charts') }}" active="{{ request()->routeIs('charts') }}"
                         icon="icon-analytics" menu="Gráficos" />
-                    <x-nav-link href="{{ route('usuarios') }}" active="{{ request()->routeIs('documentos') }}"
+                    <x-nav-link href="{{ route('users') }}" active="{{ request()->routeIs('documentos') }}"
                         icon="icon-telegram-2" menu="Documentos" />
                     <x-nav-link href="{{ route('notices') }}" active="{{ request()->routeIs('notices') }}"
                         icon="icon-feather-2" menu="Noticias" />
@@ -82,7 +95,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js" integrity="sha512-JRlcvSZAXT8+5SQQAvklXGJuxXTouyq8oIMaYERZQasB8SBDHZaUbeASsJWpk0UUrf89DP3/aefPPrlMR1h1yQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src='https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.js'></script>
     <script src="https://cdn.tiny.cloud/1/0t7v1pq1uxcl2ehyauztppdjsypqly9r55zipgmeqwbvu77q/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-   
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.6/build/vanilla-calendar.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.6/build/vanilla-calendar.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     @livewireScripts
     @stack('scripts')
 </body>

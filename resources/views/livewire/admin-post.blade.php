@@ -23,9 +23,9 @@
 
                 <div class="col-span-2 lg:col-span-1">
                     @if ($postId == null)
-                        Crear un nuevo Post({{ $type }})
+                        Crear un nuevo Post({{ $type_post }})
                     @else
-                        Editar un Post({{ $type }})
+                        Editar un Post({{ $type_post }})
                     @endif
                 </div>
                 <div class="col-span-2 lg:col-span-1 text-right">
@@ -47,17 +47,59 @@
                     <div class="mb-4">
                         <x-label for="title">Título del Post</x-label>
                         <x-input type="text" wire:model="title" wire:keyup="updateSlug" id="post-title" />
-                        @error('title')
-                            <x-input-error>{{ $message }}</x-input-error>
-                        @enderror
+                        <x-input-error for="title"/>
                     </div>
                     <div class="mb-4">
                         <x-label for="slug">Slug</x-label>
                         <x-input type="text" wire:model="slug" id="slug" />
-                        @error('slug')
-                            <x-input-error>{{ $message }}</x-input-error>
-                        @enderror
+                        <x-input-error for="slug"/>
                     </div>
+                
+                    @if($type_post=='evento')
+                    <div class="mb-4 grid grid-cols-3 gap-5">
+                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                            <x-label for="starts_at">Fecha de inicio</x-label>
+                            <x-datetime wire:model="starts_at" id="starts_at"/>
+                            <x-input-error for="starts_at"/>
+                        </div>
+                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                         
+                            <x-label for="ends_at">Fecha de cierre</x-label>
+                            <x-datetime wire:model="ends_at" id="ends_at"/>>
+                            <x-input-error for="ends_at"/>
+                        </div>
+                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                            <x-label for="organizer">Organizador</x-label>
+                            <x-input type="text" wire:model="organizer" id="organizer" />
+                            <x-input-error for="organizer"/>
+                        </div>
+                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                            <x-label for="phone">Telefono</x-label>
+                            <x-input type="text" wire:model="phone" id="phone" />
+                            <x-input-error for="phone"/>
+                        </div>
+                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                            <x-label for="email">Email</x-label>
+                            <x-input type="text" wire:model="email" id="email" />
+                            <x-input-error for="email"/>
+                        </div>
+                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                            <x-label for="location">Ubicación</x-label>
+                            <x-input type="text" wire:model="location" id="location" />
+                            <x-input-error for="location"/>
+                        </div>
+                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                            <x-label for="website">Sitio Web</x-label>
+                            <x-input type="text" wire:model="website" id="website" />
+                            <x-input-error for="wbsite"/>
+                        </div>
+                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                            <x-label for="map">Mapa</x-label>
+                            <x-input type="text" wire:model="map" id="map" />
+                            <x-input-error for="map"/>
+                        </div>
+                    </div>
+                    @endif
                     <div class="mb-4">
                         <x-label for="content">Contenido</x-label>
 
@@ -95,9 +137,7 @@
                                 });">
                         </textarea>
                         </div>
-                        @error('content')
-                            <x-input-error>{{ $message }}</x-input-error>
-                        @enderror
+                        <x-input-error for="content"/>
                     </div>
                 </x-slot>
                 <x-slot name="aside">
@@ -105,7 +145,7 @@
                     <x-button type="button" class="w-full" wire:click.prevent="store">Actualizar publicación</x-button>
 
                     <x-header>Tipo de publicación</x-header>
-                    <x-select class="w-full" wire:model="type">
+                    <x-select class="w-full" wire:model="type_post" wire:change="settype">
                         <option value="noticia">Noticia</option>
                         <option value="evento">Evento</option>
                         <option value="publicacion">Publicación</option>
@@ -135,9 +175,7 @@
                             @endif
                         </div>
                     @endforeach
-                    @error('selected_categories')
-                        <x-input-error>{{ $message }}</x-input-error>
-                    @enderror
+                    <x-input-error for="selected_categories"/>
                     <x-header>Imagen destacada</x-header>
                     <div>
                         @if ($image_path || $cover_image)
@@ -175,9 +213,7 @@
                                 </label>
                             </div>
                         @endif
-                        @error('cover_image')
-                            <x-input-error>{{ $message }}</x-input-error>
-                        @enderror
+                        <x-input-error for="cover_image"/>
                     </div>
 
                     <x-header>Extracto</x-header>

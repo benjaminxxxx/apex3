@@ -4,29 +4,36 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GraficosController;
 use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PostController;
-
+use App\Http\Controllers\ProjectController;
+use App\Http\Middleware\CheckUserStatus;
 
 Route::middleware([
     'auth:sanctum',
+    CheckUserStatus::class,
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
     Route::get('/', function () {
-        return view('welcome');
-    });
-    
-    Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
     
     Route::get('/usuarios', function () {
         return view('admin.usuarios');
-    })->name('usuarios');
+    })->name('users');
+
+    Route::get('/gestores', function () {
+        return view('admin.usuarios');
+    })->name('managers');
+
+    Route::get('/socios', function () {
+        return view('admin.partners');
+    })->name('partners');
+    
+    Route::get('/proyectos', [ProjectController::class,'index'])->name('projects');
+    Route::get('/proyecto/{slug}', [ProjectController::class,'go'])->name('project');
 
     Route::get('/noticia/{slug}', [PostController::class,'noticia'])->name('noticia');
-    Route::get('/evento/{slug}', function () {
-        return view('post.new');
-    })->name('evento');
+    Route::get('/evento/{slug}', [PostController::class,'evento'])->name('evento');
     Route::get('/publicacion/{slug}', function () {
         return view('post.new');
     })->name('publicacion');
@@ -34,6 +41,7 @@ Route::middleware([
         return view('post.new');
     })->name('foro');
     
+    Route::get('/eventos', [PostController::class,'eventos'])->name('eventos');
     Route::get('/noticias', [NoticiasController::class,'index'])->name('notices');
     Route::get('/noticias/cargar-mas-noticias', [NoticiasController::class, 'loadMoreNotices'])->name('notices-load-more');
     
