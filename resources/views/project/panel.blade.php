@@ -7,7 +7,9 @@
     </x-slot>
     <x-two-columns-content-aside>
         <x-slot name="content">
-            <livewire:project-panel :project_id="$project_id"/>
+            <x-max-content>
+                <livewire:project-panel :project_id="$project_id"/>
+            </x-max-content>
         </x-slot>
         <x-slot name="aside">
             <livewire:chat/>

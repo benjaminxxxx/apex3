@@ -1,6 +1,6 @@
 <div>
     <x-card>
-        <x-h3>{{ __('Search and add new Manager') }}</x-h3>
+        <x-h3>{{ __('Search and add new Partner') }}</x-h3>
         <div class="flex items-start mt-2">
             <div class="relative">
                 <x-input type="text" wire:model="user_search" wire:keyup="search" placeholder="Nombre del usuario" />
@@ -13,8 +13,7 @@
                         <div class="space-y-4 p-4">
                             @foreach ($users as $user)
                                 @php
-                                    $userRoleName = config("roles.{$user->role_id}");
-                                    $isMember = $user->groups->contains($this->group_id);
+                                    $isMember = $user->groupPartners->contains($group_id);
                                 @endphp
                                 <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
                                     <img class="w-12 h-12 rounded-full object-cover"
@@ -22,7 +21,7 @@
                                     <div>
                                         <div class="flex items-center">
                                             <span class="font-semibold text-lg">{{ $user->name }}</span>
-                                            <span class="text-sm text-gray-500 ml-2">({{ $userRoleName }})</span>
+                                            <span class="text-sm text-gray-500 ml-2">({{ $user->role->name }})</span>
                                         </div>
                                         <span class="text-gray-500">{{ $user->email }}</span>
                                     </div>
@@ -40,7 +39,7 @@
                 @endif
             </div>
             <x-button wire:click="openForm" type="submit" class="ml-4">
-                {{ __('Register user') }}
+                {{ __('Register partner') }}
             </x-button>
         </div>
     </x-card>
@@ -72,13 +71,13 @@
     <!-- Modal -->
     <x-dialog-modal wire:model="isFormOpen">
         <x-slot name="title">
-            Agregar Nuevo Gestor
+            Agregar Nuevo Socio
         </x-slot>
 
         <x-slot name="content">
             <form wire:submit.prevent="save">
                 <div class="mb-4">
-                    <x-label for="nickname">Nickname</x-label>
+                    <x-label for="nickname">DNI</x-label>
                     <x-input type="text" wire:model="nickname" id="nickname" />
                     <x-input-error for="nickname" />
                 </div>
@@ -108,7 +107,7 @@
                         class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
 
                         @foreach ($roles as $role)
-                            <option value="{{ $role->id }}">{{ mb_strtoupper($role->role_name) }}</option>
+                            <option value="{{ $role->id }}">{{ $role->UpperName }}</option>
                         @endforeach
                     </x-select>
                     <x-input-error for="role_id" />

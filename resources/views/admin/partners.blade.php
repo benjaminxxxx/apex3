@@ -10,4 +10,6 @@
     </x-slot>
 
     <livewire:admin-partners />
+
+    <livewire:chat :popup="true"/>
 </x-app-layout>

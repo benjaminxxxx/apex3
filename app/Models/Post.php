@@ -58,4 +58,8 @@ class Post extends Model
     {
         return $this->hasMany(Reaction::class);
     }
+    public function visibilityLevels()
+    {
+        return $this->hasMany(PostVisibilityLevel::class);
+    }
 }

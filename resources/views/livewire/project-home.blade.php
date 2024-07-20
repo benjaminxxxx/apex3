@@ -1,4 +1,5 @@
 <div>
+    @if(Auth::user()->hasPermission('add_projects'))
     <x-card>
         @if ($errors->has('error_message'))
             <x-message-error>
@@ -16,9 +17,11 @@
             <x-input-error for="name"/>
         </form>
     </x-card>
+    @endif
     @php
         use Carbon\Carbon;
     @endphp
+    @if($projects->count())
     <div class="groups grid grid-cols-3 gap-10 mt-2 lg:mt-5">
         @foreach ($projects as $project)
             <x-pop class="col-span-3 md:col-span-2 lg:col-span-1">
@@ -30,13 +33,20 @@
                 <div class="text-center p-6">
                     <a class="text-xl font-semibold" href="{{ route('project',['slug'=>$project->project_code]) }}">{{ $project->name }}</a>
                     <p class="text-gray-600 text-sm my-3">{{ Carbon::parse($project->created_at)->diffForHumans() }}</p>
+                    @if(Auth::user()->hasPermission('add_projects'))
                     <x-danger-button wire:click="destroy({{$project->id}})">
                         Eliminar grupo
                     </x-danger-button>
+                    @endif
                 </div>
             </x-pop>
         @endforeach
     </div>
+    @else
+    <x-card>
+       {{__('No projects assigned yet')}}
+    </x-card>
+    @endif
     @if (session()->has('message'))
         <div id="toast-top-right"
             class="fixed flex mt-24 z-50 items-center w-full max-w-xs p-4 space-x-4 text-white bg-green-600 divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-5 right-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800"

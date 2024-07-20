@@ -16,7 +16,8 @@ class Chart extends Model
         'title',
         'order_by',
         'showlabels',
-        'showlegend'
+        'showlegend',
+        'group_id'
     ];
     protected static function boot()
     {
@@ -27,5 +28,13 @@ class Chart extends Model
                 $model->chart_id = Str::random(10);
             } while (self::where('chart_id', $model->chart_id)->exists());
         });
+    }
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
+    public function columns()
+    {
+        return $this->hasMany(ColumnChart::class);
     }
 }

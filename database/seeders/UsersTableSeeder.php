@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Permission;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
@@ -20,6 +21,16 @@ class UsersTableSeeder extends Seeder
         $managerRole = Role::create(['name' => 'Manager']);
         $partnerRole = Role::create(['name' => 'Partner']);
         $collaboratorRole = Role::create(['name' => 'Collaborator']);
+
+        $addNews = Permission::create(['name' => 'add_news']);
+        $editNews = Permission::create(['name' => 'edit_news']);
+        $deleteNews = Permission::create(['name' => 'delete_news']);
+        $addProjects = Permission::create(['name' => 'add_projects']);
+        $addGroup = Permission::create(['name' => 'add_group']);
+
+        $superAdminRole->permissions()->attach([$addNews->id, $editNews->id, $deleteNews->id,$addProjects->id]);
+        $adminRole->permissions()->attach([$addNews->id, $editNews->id, $deleteNews->id,$addProjects->id]);
+        $managerRole->permissions()->attach([$addNews->id, $editNews->id, $deleteNews->id,$addGroup->id]);
 
         // Crear un super administrador
         User::create([

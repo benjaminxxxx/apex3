@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Post;
 use App\Models\Category;
+use App\Models\PostVisibilityLevel;
 use Auth;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
@@ -39,6 +40,8 @@ class AdminPost extends Component
     public $isDeleting;
     public $postIdToDelete;
     public $isEditing;
+    public $visibilityAll = false;
+    public $selected_visibility = [];
     public function mount($type = null)
     {
        
@@ -56,10 +59,11 @@ class AdminPost extends Component
             'selected_categories' => 'required',
             'content' => 'required',
             'slug' => ['required','unique:posts,slug,' . $this->postId],
+            'selected_visibility'=> 'required'
         ];
 
         if ($this->cover_image) {
-            $rules['cover_image'] = 'image|max:1024'; // 1MB Max
+            $rules['cover_image'] = 'image|max:10240'; // 1MB Max
         }
 
         if ($this->type_post == 'evento') {
@@ -78,10 +82,11 @@ class AdminPost extends Component
 
     protected $messages = [
         'cover_image.image' => 'El archivo debe ser una imagen.',
-        'cover_image.max' => 'La imagen no debe ser mayor a 1MB.',
+        'cover_image.max' => 'La imagen no debe ser mayor a 10MB.',
         'title.required' => 'El título es obligatorio.',
         'title.string' => 'El título debe ser una cadena de texto.',
         'selected_categories.required' => 'Debe seleccionar al menos una categoría.',
+        'selected_visibility.required' => 'Debe seleccionar al menos una visibilidad.',
         'content.required' => 'El contenido es obligatorio.',
         'slug.required' => 'El slug es obligatorio.',
         'slug.unique' => 'El slug ya está en uso.',
@@ -113,6 +118,8 @@ class AdminPost extends Component
         try {
            
             $this->validate();
+
+            
 
             $allowCommentsValue = $this->allow_comments ? 1 : 0;
 
@@ -161,12 +168,28 @@ class AdminPost extends Component
 
                 $post->update($postData);    
                 $post->categories()->sync($this->selected_categories);
+
+                $post->visibilityLevels()->delete();
+                foreach ($this->selected_visibility as $level) {
+                    PostVisibilityLevel::create([
+                        'post_id' => $post->id,
+                        'visibility_level' => $level
+                    ]);
+                }
+
                 session()->flash('message', 'Post actualizado con éxito.');
             } else {
 
                 $postData['user_id'] = Auth::id();
                 $post = Post::create($postData);
                 $post->categories()->sync($this->selected_categories);
+                $post->visibilityLevels()->delete();
+                foreach ($this->selected_visibility as $level) {
+                    PostVisibilityLevel::create([
+                        'post_id' => $post->id,
+                        'visibility_level' => $level
+                    ]);
+                }
                 session()->flash('message', 'Post guardado con éxito.');
             }
             $this->closeForm();
@@ -178,6 +201,7 @@ class AdminPost extends Component
         }
 
     }
+   
     protected function storeCoverImage($image)
     {
         $currentYear = now()->year;
@@ -215,6 +239,8 @@ class AdminPost extends Component
         $this->allow_comments = (bool) $post->allow_comments;
         $this->excerpt = $post->excerpt;
         $this->selected_categories = $post->categories->pluck('id')->toArray(); 
+        $this->selected_visibility = $post->visibilityLevels()->pluck('visibility_level')->toArray();
+   
         $this->type_post = $post->type;
 
         //CAMPOS PARA EVENTOS
@@ -289,6 +315,7 @@ class AdminPost extends Component
         $this->allow_comments = false;
         $this->excerpt = null;
         $this->selected_categories = []; 
+        $this->selected_visibility = [];
         $this->type_post = 'noticia';
         $this->isEditing = false;
         $this->isFormOpen = false;

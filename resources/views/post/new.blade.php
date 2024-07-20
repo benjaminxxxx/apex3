@@ -14,7 +14,7 @@
                 @endphp
                 <section
                     class="bg-center bg-no-repeat bg-gray-400 bg-blend-multiply lg:min-h-[370px] h-full flex items-end"
-                    style="background-image: url('{{ $url_cover_image }}');">
+                    style="background-image: url('{{ $url_cover_image }}'); background-size: cover;">
                     <div class="flex flex-col justify-end h-full p-2 md:p-4 lg:p-10">
                         <div>
                             <div class="flex flex-wrap mb-4">

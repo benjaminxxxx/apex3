@@ -57,21 +57,28 @@ class ProjectHome extends Component
         $projects = collect();
 
         switch (Auth::user()->role_id) {
-            case '1':
-                $projects = Project::all();
+
+            case '3':
+                $projects = Auth::user()->managedProjects;
+                break;
+
+            case '4':
+                $projects = Auth::user()->projectsAsPartner();
                 break;
 
             default:
-                $projects = Project::where(['administrator_id' => Auth::id()])->get();
+                $projects = Project::all();
                 break;
         }
         return view('livewire.project-home', ['projects' => $projects]);
     }
-    public function destroy($groupId)
+    public function destroy($projectId)
     {
         try {
-            Group::find($groupId)->delete();
-            session()->flash('message', 'Groupo eliminado');
+            $project = Project::findOrFail($projectId);
+            $project->status = 2;
+            $project->save();
+            session()->flash('message', 'Proyecto eliminado');
 
         } catch (QueryException $e) {
 

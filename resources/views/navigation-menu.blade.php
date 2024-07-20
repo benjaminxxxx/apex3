@@ -23,7 +23,12 @@
             </div>
             <div class="flex items-center p-2 md:p-3">
                 <div class="flex items-center ms-3">
+                    <div class="text-right">
+                        <p class="text-md font-medium">{{ Auth::user()->name }}</p>
+                        <x-label class="text-cyan-600 font-medium">{{ Auth::user()->role->name }}</x-label>
+                    </div>
                     <div class="ms-3 relative">
+                        
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
                                 @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())

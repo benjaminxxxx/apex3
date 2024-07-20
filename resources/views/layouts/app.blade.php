@@ -43,26 +43,26 @@
 
                     <x-nav-link href="{{ route('dashboard') }}" active="{{ request()->routeIs('dashboard') }}"
                         icon="icon-home-3" menu="Escritorio" />
-                        <x-nav-link href="{{ route('projects') }}" active="{{ request()->routeIs('projects') }}"
-                            icon="icon-signal-2" menu="Proyectos" />
-                    @if(Auth::user()->role_id=='2')
-                    <x-nav-link href="{{ route('managers') }}" active="{{ request()->routeIs('managers') }}"
-                        icon="icon-user-3" menu="Gestores" />
-                    @elseif(Auth::user()->role_id=='3')
-                    <x-nav-link href="{{ route('partners') }}" active="{{ request()->routeIs('partners') }}"
-                        icon="icon-user-3" menu="Socios" />
-                    @else
-                    <x-nav-link href="{{ route('users') }}" active="{{ request()->routeIs('users') }}"
-                        icon="icon-user-3" menu="Miembros" />
+                    <x-nav-link href="{{ route('projects') }}" active="{{ request()->routeIs('projects') }}"
+                        icon="icon-signal-2" menu="Proyectos" />
+                    @if (Auth::user()->role_id == '2')
+                        <x-nav-link href="{{ route('managers') }}" active="{{ request()->routeIs('managers') }}"
+                            icon="icon-user-3" menu="Gestores" />
+                    @elseif(Auth::user()->role_id == '3')
+                        <x-nav-link href="{{ route('partners') }}" active="{{ request()->routeIs('partners') }}"
+                            icon="icon-user-3" menu="Socios" />
+                    @elseif(Auth::user()->role_id == '1')
+                        <x-nav-link href="{{ route('users') }}" active="{{ request()->routeIs('users') }}"
+                            icon="icon-user-3" menu="Miembros" />
                     @endif
-                    
+
                     <x-nav-link href="{{ route('eventos') }}" active="{{ request()->routeIs('eventos') }}"
                         icon="icon-copy" menu="Eventos" />
                     <x-nav-link href="{{ route('charts') }}" active="{{ request()->routeIs('charts') }}"
                         icon="icon-analytics" menu="Gráficos" />
-                    <x-nav-link href="{{ route('users') }}" active="{{ request()->routeIs('documentos') }}"
+                    <x-nav-link href="{{ route('documents') }}" active="{{ request()->routeIs('documents') }}"
                         icon="icon-telegram-2" menu="Documentos" />
-                    <x-nav-link href="{{ route('notices') }}" active="{{ request()->routeIs('notices') }}"
+                    <x-nav-link href="{{ route('news') }}" active="{{ request()->routeIs('news') }}"
                         icon="icon-feather-2" menu="Noticias" />
                     <x-nav-link href="{{ route('contact') }}" active="{{ request()->routeIs('contact') }}"
                         icon="icon-email-3" menu="Contacto" />
@@ -82,21 +82,27 @@
         </div>
 
     </div>
+    <audio id="notification-sound" src="{{ asset('sounds/livechat-129007.mp3') }}" preload="auto"></audio>
+
 
     @stack('modals')
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
         integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous">
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
     <!-- Importamos Tippy.js para los tooltips -->
     <script src="https://unpkg.com/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js" integrity="sha512-JRlcvSZAXT8+5SQQAvklXGJuxXTouyq8oIMaYERZQasB8SBDHZaUbeASsJWpk0UUrf89DP3/aefPPrlMR1h1yQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js"
+        integrity="sha512-JRlcvSZAXT8+5SQQAvklXGJuxXTouyq8oIMaYERZQasB8SBDHZaUbeASsJWpk0UUrf89DP3/aefPPrlMR1h1yQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src='https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.js'></script>
-    <script src="https://cdn.tiny.cloud/1/0t7v1pq1uxcl2ehyauztppdjsypqly9r55zipgmeqwbvu77q/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/0t7v1pq1uxcl2ehyauztppdjsypqly9r55zipgmeqwbvu77q/tinymce/5/tinymce.min.js"
+        referrerpolicy="origin"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.6/build/vanilla-calendar.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.6/build/vanilla-calendar.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.6/build/vanilla-calendar.min.css"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     @livewireScripts
     @stack('scripts')

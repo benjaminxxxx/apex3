@@ -69,7 +69,12 @@
   "Search and add new Manager": "Buscar y agregar nuevo gestor",
   "Search by name and email, otherwise register a new user": "Busque por nombre y email, de lo contrario registre un nuevo usuario",
   "Register user": "Registrar usuario",
-  "Contact information":"Información de contacto"
+  "Contact information":"Información de contacto",
+  "No projects assigned yet": "Aún no se le ha asignado ningún proyecto",
+  "The project was not found.": "El proyecto no se encontró.",
+    "Verify that the shared link comes from a reliable source.": "Verifique que el enlace compartido proviene de una fuente confiable.",
+    "Make sure you have the necessary permissions to view the project.": "Asegúrese de que tiene los permisos necesarios para ver el proyecto.",
+    "It is possible that the project has been deleted or its visibility permissions have changed.": "Es posible que el proyecto haya sido eliminado o que sus permisos de visibilidad hayan cambiado."
 
 
 }

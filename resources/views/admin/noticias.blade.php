@@ -14,7 +14,9 @@
                     <h2 class="font-bold text-3xl text-gray-800 leading-tight inline-block">
                         Noticias
                     </h2>
-                    <x-a href="{{ route('post.new', ['slug' => 'noticia']) }}" class="ml-2">Publicar noticia</x-a>
+                    @if(Auth::user()->hasPermission('add_news'))
+                    <x-a href="{{ route('post.new', ['type' => 'noticia']) }}" class="ml-2">Publicar noticia</x-a>
+                    @endif
                 </div>
                 <div class="w-full">
                     <div id="posts-container" class="">
@@ -33,10 +35,10 @@
                                             <small>{{ $post->created_at->format('M d, Y') }}</small>
                                         </div>
                                         <a href="{{route('noticia',['slug'=>$post->slug])}}" class="text-steal-800 font-semibold">{{ $post->title }}</a>
-                                        <div class="flex items-center text-gray-500 text-sm mt-1">
+                                        <!--<div class="flex items-center text-gray-500 text-sm mt-1">
                                             <i class="icon-comment-light text-orange-600"></i>
-                                            ({{ $post->comments_count }})
-                                        </div>
+                                            (0)
+                                        </div>-->
                                         <div class="excerpt">
                                             @php
                                                 $excerpt =
@@ -154,7 +156,7 @@
             }
 
             function loadNotices() {
-                const url = "{{ route('notices-load-more') }}";
+                const url = "{{ route('news-load-more') }}";
                 fetch(url + '?offset=' + offset)
                     .then(response => response.json())
                     .then(data => {

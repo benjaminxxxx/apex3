@@ -19,6 +19,7 @@ class AdminPartners extends Component
     public $isFormOpen;
     public $projects;
     public $assignedProjects = [];
+    public $assignedGroups = [];
     public $isEditing;
     public $isDeleting;
     public $user_code;
@@ -67,13 +68,15 @@ class AdminPartners extends Component
             $this->lastname = $user->lastname;
             $this->email = $user->email;
             $this->role_id = $user->role_id;
-            $this->birthday = $user->birthday;
+            $this->birthdate = $user->birthdate;
             $this->phone = $user->phone;
             $this->address = $user->address;
             $this->isEditing = true;
             $this->isFormOpen = true;
 
             $this->assignedProjects = $user->assignedProjects->pluck('project_id')->toArray();
+            $this->assignedGroups = $user->groupPartners->pluck('id')->toArray();
+        
         }
 
     }
@@ -153,18 +156,33 @@ class AdminPartners extends Component
                 session()->flash('message', 'Usuario actualizado con éxito.');
 
             }
+            $manager = Auth::user();
 
-            DB::table('project_manager_partner')->where('partner_id', $user->id)->where('manager_id', Auth::id())->delete();
+            DB::table('group_partner')->where('partner_id', $user->id)->whereIn('group_id', function($query) use ($manager) {
+                $query->select('id')
+                      ->from('groups')
+                      ->where('manager_id', $manager->id);
+            })->delete();
 
-            if (!empty($this->assignedProjects)) {
-                foreach ($this->assignedProjects as $projectId) {
-                    DB::table('project_manager_partner')->insert([
-                        'project_id' => $projectId,
-                        'manager_id' => Auth::id(),
+            if (!empty($this->assignedGroups)) {
+                foreach ($this->assignedGroups as $groupId) {
+                    DB::table('group_partner')->insert([
+                        'group_id' => $groupId,
                         'partner_id' => $user->id,
                     ]);
                 }
             }
+/*
+            DB::table('project_manager_partner')->where('partner_id', $user->id)->where('manager_id', Auth::id())->delete();
+
+            if (!empty($this->assignedGroups)) {
+                foreach ($this->assignedGroups as $groupId) {
+                    DB::table('group_partner')->insert([
+                        'group_id' => $groupId,
+                        'partner_id' => $user->id,
+                    ]);
+                }
+            }*/
 
             $this->closeForm();
         } catch (QueryException $e) {

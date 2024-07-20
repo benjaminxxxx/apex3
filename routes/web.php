@@ -5,7 +5,10 @@ use App\Http\Controllers\GraficosController;
 use App\Http\Controllers\NoticiasController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Middleware\CheckUserStatus;
+
 
 Route::middleware([
     'auth:sanctum',
@@ -22,15 +25,18 @@ Route::middleware([
     })->name('users');
 
     Route::get('/gestores', function () {
-        return view('admin.usuarios');
+        return view('admin.managers');
     })->name('managers');
 
     Route::get('/socios', function () {
         return view('admin.partners');
     })->name('partners');
+
+    Route::get('/documentos', [DocumentController::class,'index'])->name('documents');
     
     Route::get('/proyectos', [ProjectController::class,'index'])->name('projects');
     Route::get('/proyecto/{slug}', [ProjectController::class,'go'])->name('project');
+    Route::get('/grupo/{slug}', [GroupController::class,'go'])->name('group.go');
 
     Route::get('/noticia/{slug}', [PostController::class,'noticia'])->name('noticia');
     Route::get('/evento/{slug}', [PostController::class,'evento'])->name('evento');
@@ -42,8 +48,8 @@ Route::middleware([
     })->name('foro');
     
     Route::get('/eventos', [PostController::class,'eventos'])->name('eventos');
-    Route::get('/noticias', [NoticiasController::class,'index'])->name('notices');
-    Route::get('/noticias/cargar-mas-noticias', [NoticiasController::class, 'loadMoreNotices'])->name('notices-load-more');
+    Route::get('/noticias', [NoticiasController::class,'index'])->name('news');
+    Route::get('/noticias/cargar-mas-noticias', [NoticiasController::class, 'loadMoreNotices'])->name('news-load-more');
     
     Route::get('/post/nuevo/{type?}', [PostController::class,'index'])->name('post.new');
 

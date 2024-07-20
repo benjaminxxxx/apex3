@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Project extends Model
 {
@@ -31,6 +32,10 @@ class Project extends Model
     public function groups()
     {
         return $this->hasMany(Group::class);
+    }
+    public function groupsOfMe()
+    {
+        return $this->hasMany(Group::class)->where('manager_id', Auth::id());
     }
     public function users()
     {

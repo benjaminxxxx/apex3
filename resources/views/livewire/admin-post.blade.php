@@ -47,58 +47,58 @@
                     <div class="mb-4">
                         <x-label for="title">Título del Post</x-label>
                         <x-input type="text" wire:model="title" wire:keyup="updateSlug" id="post-title" />
-                        <x-input-error for="title"/>
+                        <x-input-error for="title" />
                     </div>
                     <div class="mb-4">
                         <x-label for="slug">Slug</x-label>
                         <x-input type="text" wire:model="slug" id="slug" />
-                        <x-input-error for="slug"/>
+                        <x-input-error for="slug" />
                     </div>
-                
-                    @if($type_post=='evento')
-                    <div class="mb-4 grid grid-cols-3 gap-5">
-                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
-                            <x-label for="starts_at">Fecha de inicio</x-label>
-                            <x-datetime wire:model="starts_at" id="starts_at"/>
-                            <x-input-error for="starts_at"/>
+
+                    @if ($type_post == 'evento')
+                        <div class="mb-4 grid grid-cols-3 gap-5">
+                            <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                                <x-label for="starts_at">Fecha de inicio</x-label>
+                                <x-datetime wire:model="starts_at" id="starts_at" />
+                                <x-input-error for="starts_at" />
+                            </div>
+                            <div class="col-span-3 md:col-span-2 lg:col-span-1">
+
+                                <x-label for="ends_at">Fecha de cierre</x-label>
+                                <x-datetime wire:model="ends_at" id="ends_at" />>
+                                <x-input-error for="ends_at" />
+                            </div>
+                            <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                                <x-label for="organizer">Organizador</x-label>
+                                <x-input type="text" wire:model="organizer" id="organizer" />
+                                <x-input-error for="organizer" />
+                            </div>
+                            <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                                <x-label for="phone">Telefono</x-label>
+                                <x-input type="text" wire:model="phone" id="phone" />
+                                <x-input-error for="phone" />
+                            </div>
+                            <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                                <x-label for="email">Email</x-label>
+                                <x-input type="text" wire:model="email" id="email" />
+                                <x-input-error for="email" />
+                            </div>
+                            <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                                <x-label for="location">Ubicación</x-label>
+                                <x-input type="text" wire:model="location" id="location" />
+                                <x-input-error for="location" />
+                            </div>
+                            <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                                <x-label for="website">Sitio Web</x-label>
+                                <x-input type="text" wire:model="website" id="website" />
+                                <x-input-error for="wbsite" />
+                            </div>
+                            <div class="col-span-3 md:col-span-2 lg:col-span-1">
+                                <x-label for="map">Mapa</x-label>
+                                <x-input type="text" wire:model="map" id="map" />
+                                <x-input-error for="map" />
+                            </div>
                         </div>
-                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
-                         
-                            <x-label for="ends_at">Fecha de cierre</x-label>
-                            <x-datetime wire:model="ends_at" id="ends_at"/>>
-                            <x-input-error for="ends_at"/>
-                        </div>
-                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
-                            <x-label for="organizer">Organizador</x-label>
-                            <x-input type="text" wire:model="organizer" id="organizer" />
-                            <x-input-error for="organizer"/>
-                        </div>
-                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
-                            <x-label for="phone">Telefono</x-label>
-                            <x-input type="text" wire:model="phone" id="phone" />
-                            <x-input-error for="phone"/>
-                        </div>
-                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
-                            <x-label for="email">Email</x-label>
-                            <x-input type="text" wire:model="email" id="email" />
-                            <x-input-error for="email"/>
-                        </div>
-                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
-                            <x-label for="location">Ubicación</x-label>
-                            <x-input type="text" wire:model="location" id="location" />
-                            <x-input-error for="location"/>
-                        </div>
-                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
-                            <x-label for="website">Sitio Web</x-label>
-                            <x-input type="text" wire:model="website" id="website" />
-                            <x-input-error for="wbsite"/>
-                        </div>
-                        <div class="col-span-3 md:col-span-2 lg:col-span-1">
-                            <x-label for="map">Mapa</x-label>
-                            <x-input type="text" wire:model="map" id="map" />
-                            <x-input-error for="map"/>
-                        </div>
-                    </div>
                     @endif
                     <div class="mb-4">
                         <x-label for="content">Contenido</x-label>
@@ -137,7 +137,7 @@
                                 });">
                         </textarea>
                         </div>
-                        <x-input-error for="content"/>
+                        <x-input-error for="content" />
                     </div>
                 </x-slot>
                 <x-slot name="aside">
@@ -151,7 +151,52 @@
                         <option value="publicacion">Publicación</option>
                         <option value="foro">Foro</option>
                     </x-select>
-
+                    <div x-data="{
+                        allChecked: false,
+                        toggleAll() {
+                            if (this.allChecked) {
+                                @this.set('selected_visibility', []);
+                            } else {
+                                @this.set('selected_visibility', ['2', '3', '4']);
+                            }
+                            this.allChecked = !this.allChecked;
+                        },
+                        checkAllStatus() {
+                            this.allChecked = @this.get('selected_visibility').length === 3;
+                        }
+                    }" x-init="checkAllStatus();
+                    $watch('$wire.selected_visibility', value => checkAllStatus());">
+                        <x-header>Visibilidad</x-header>
+                        <div class="visibility">
+                            <div class="flex items-center mt-4 mb-2">
+                                <x-checkbox id="visibility_all" type="checkbox" x-model="allChecked"
+                                    @click="toggleAll" />
+                                <x-label for="visibility_all" class="ml-2">Todos</x-label>
+                            </div>
+                            <div class="ml-4">
+                                <div class="flex items-center mb-2 subcategory">
+                                    <x-checkbox id="visibility_2" type="checkbox" value="2"
+                                        wire:model="selected_visibility" @change="checkAllStatus" />
+                                    <x-label for="visibility_2" class="ml-2">Administradores</x-label>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="flex items-center mb-2 subcategory">
+                                    <x-checkbox id="visibility_3" type="checkbox" value="3"
+                                        wire:model="selected_visibility" @change="checkAllStatus" />
+                                    <x-label for="visibility_3" class="ml-2">Gestores</x-label>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="flex items-center mb-2 subcategory">
+                                    <x-checkbox id="visibility_4" type="checkbox" value="4"
+                                        wire:model="selected_visibility" @change="checkAllStatus" />
+                                    <x-label for="visibility_4" class="ml-2">Socios</x-label>
+                                </div>
+                            </div>
+                        </div>
+                        <x-input-error for="selected_visibility" />
+                    </div>
                     <x-header>Categorías</x-header>
                     @foreach ($categories as $category)
                         <div class="category">
@@ -175,7 +220,7 @@
                             @endif
                         </div>
                     @endforeach
-                    <x-input-error for="selected_categories"/>
+                    <x-input-error for="selected_categories" />
                     <x-header>Imagen destacada</x-header>
                     <div>
                         @if ($image_path || $cover_image)
@@ -199,8 +244,8 @@
                                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                         <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
                                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2"
                                                 d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
                                         </svg>
                                         <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
@@ -209,11 +254,12 @@
                                             (MAX.
                                             800x400px)</p>
                                     </div>
-                                    <input id="dropzone-file" type="file" wire:model="cover_image" class="hidden" />
+                                    <input id="dropzone-file" type="file" wire:model="cover_image"
+                                        class="hidden" />
                                 </label>
                             </div>
                         @endif
-                        <x-input-error for="cover_image"/>
+                        <x-input-error for="cover_image" />
                     </div>
 
                     <x-header>Extracto</x-header>
@@ -254,7 +300,8 @@
                 @foreach ($posts as $post)
                     <x-tr>
                         <x-th>
-                            <x-link href="{{route($post->type,['slug'=>$post->slug])}}" target="_blank" class="">{{ $post->title }}</x-link>
+                            <x-link href="{{ route($post->type, ['slug' => $post->slug]) }}" target="_blank"
+                                class="">{{ $post->title }}</x-link>
                         </x-th>
                         <x-th>
                             @if ($post->categories->isNotEmpty())

@@ -9,24 +9,26 @@ class Group extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name', 'description', 'project_id', 'manager_id',
+        'name','slug', 'description', 'manager_id', 'project_id'
     ];
-    
-    public function project()
-    {
-        return $this->belongsTo(Project::class);
-    }
 
+    // Relationships
     public function manager()
     {
         return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id');
     }
 
     public function partners()
     {
         return $this->belongsToMany(User::class, 'group_partner', 'group_id', 'partner_id');
     }
-
-   
+    public function charts()
+    {
+        return $this->hasMany(Chart::class);
+    }
 }
-
