@@ -9,24 +9,27 @@ class Post extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id', 
+        'id',
+        'created_by',
+        'code', 
         'title', 
         'content', 
         'slug', 
         'cover_image',
-        'allow_comments',
         'excerpt',
         'status',
-        'type',
-        'starts_at',
-        'ends_at',
-        'organizer',
-        'phone',
-        'email',
-        'location',
-        'website',
-        'map'
+        'type'
     ];
+    protected $appends = ['cover_image_url'];
+    
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'post_visibility_levels', 'post_id', 'visibility_level');
+    }
     public function getCoverImageUrlAttribute()
     {
         if ($this->cover_image) {

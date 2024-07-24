@@ -1,5 +1,5 @@
 <div>
-    @if (Auth::user()->role_id!=4)
+    @if (Auth::user()->role_id != 4)
         <x-card>
             <div class="flex items-center">
                 <!-- User Avatar -->
@@ -48,7 +48,7 @@
                 <div class="flex items-start">
                     <!-- User Avatar -->
                     <img class="w-12 h-12 rounded-full mr-4" src="{{ $document->creator->profile_photo_url }}"
-                        alt="User Avatar">
+                        alt="{{ $document->creator->fullName }}">
                     <div>
                         <!-- User Name and Time -->
                         <div class="text-lg font-semibold text-gray-800">{{ $document->creator->fullName }}</div>
@@ -66,12 +66,25 @@
                     <!-- Document Description -->
                     <div class="text-gray-600 mt-2">{{ $document->description }}</div>
                 </div>
+                <!-- Badges for User Roles -->
+                <div class="flex mt-4 justify-end">
+                    @foreach ($document->roles as $role)
+                        @if ($role->id != 1)
+                            <span class="bg-amber-400 text-gray-700 text-xs mr-2 px-3 py-1 rounded">
+                                {{ $role->name }}
+                            </span>
+                        @endif
+                    @endforeach
+                </div>
                 <!-- Additional Document Posts -->
                 <!-- Repeat the above block for each document post -->
             </x-card>
         @endforeach
-    @endif
+        @if ($documents->count() == 0)
+            <x-label class="mt-10 text-center">Aún no hay documentos publicados.</x-label>
+        @endif
 
+    @endif
     <x-dialog-modal wire:model.live="openCreateNewDocument">
         <x-slot name="title">
             Cargar nuevo Documento
@@ -94,12 +107,13 @@
                     <x-label class="font-semibold">{{ Auth::user()->fullName }}</x-label>
                     <!-- Combo Box -->
                     <select class="w-auto mt-1 rounded-2xl bg-gray-200 border-0 text-xs px-5 py-2"
-                        wire:model="visibility">
+                        wire:model="visibility" wire:change="checkVisibility">
                         @if ($document_type == '1')
                             <option value="">Público</option>
                             <option value="2">Administradores</option>
                             <option value="3">Gestores</option>
                             <option value="4">Socios</option>
+                            <option value="5">Para un miembro</option>
                         @endif
                         @if ($document_type == '2')
                             <option value="">Todos los miembros</option>
@@ -111,8 +125,49 @@
                             <option value="">Todos los socios</option>
                         @endif
                     </select>
+                    
                 </div>
             </div>
+            @if($visibility==5)
+                    
+                    <div class="relative">
+<x-label class="!text-xs mt-3 !text-gray-500">{{ __('Search by name and email, otherwise register a new user') }}</x-label>
+                        <x-input wire:model="user_to_search" wire:keyup="search" placeholder="Nombre del usuario" />
+                        @if ($user_to)
+                            <span class="bg-cyan-700 text-white text-xs mr-2 px-3 py-1 rounded">
+                                {{ $user_to_name }}
+                            </span>
+                        @endif
+                        <x-input-error for="user_to" />
+                        
+                        @if ($users && $users->count() > 0)
+                            <!-- Contenedor de resultados -->
+                            <div class="absolute w-full bg-white mt-2 rounded-lg shadow-lg z-10">
+                                <div class="space-y-4 p-4">
+                                    @foreach ($users as $user)
+                                       
+                                        <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                                            <img class="w-12 h-12 rounded-full object-cover"
+                                                src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}">
+                                            <div>
+                                                <div class="flex items-center">
+                                                    <span class="font-semibold text-lg">{{ $user->fullName }}</span>
+                                                    <span class="text-sm text-gray-500 ml-2">({{ $user->role->name }})</span>
+                                                </div>
+                                                <span class="text-gray-500">{{ $user->email }}</span>
+                                            </div>
+                                            <div>
+                                                <x-success-button type="button" wire:click="addMember({{ $user->id }},'{{$user->fullName}}')">
+                                                    <i class="icon icon-plus"></i>
+                                                </x-success-button>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                    @endif
             <textarea class="w-full mt-2 border-0 p-0 focus:border-none focus:outline-0 focus:ring-0" rows="3"
                 placeholder="Descripción del documento" wire:model="description"></textarea>
             <div class="relative flex justify-end">

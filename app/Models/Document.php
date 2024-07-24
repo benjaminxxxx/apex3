@@ -18,6 +18,9 @@ class Document extends Model
         'created_by',
         'status',
         'type',
+        'user_to',
+        'group_id',
+        'project_id'
     ];
 
     /**
@@ -31,9 +34,10 @@ class Document extends Model
     /**
      * Get the roles associated with the document
      */
+   
     public function roles()
     {
-        return $this->hasMany(DocumentRole::class);
+        return $this->belongsToMany(Role::class, 'document_roles', 'document_id', 'role_id');
     }
     public function getFilePhotoUrlAttribute()
     {

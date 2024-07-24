@@ -24,8 +24,8 @@
 
                         @if ($posts->isNotEmpty())
                             @foreach ($posts as $post)
-                                <div class="p-2 md:p-4 grid__item">
-                                    <div class="mb-4 rounded-lg p-2 md:p-10 shadow-lg bg-white  relative">
+                                <div class="mb-4 rounded-lg p-2 md:p-10 shadow-lg bg-white  relative grid__item">
+                                  
                                         <img src="{{ asset('storage/' . $post->cover_image) }}" class="w-full"
                                             alt="">
                                         <div class="text-gray-500 text-sm">
@@ -46,7 +46,6 @@
                                             @endphp
                                             {{ $excerpt }}
                                         </div>
-                                    </div>
                                 </div>
                             @endforeach
                         @else
@@ -112,14 +111,7 @@
         </div>
     </div>
     <style>
-        .grid__item,
-        .grid__col-sizer {
-            width: 50%;
-        }
-
-        .grid__item {
-            float: left;
-        }
+        
     </style>
     @push('scripts')
         <script>

@@ -207,7 +207,7 @@
                                     {{ $category->name }}</x-label>
                             </div>
                             @if ($category->children->isNotEmpty())
-                                <div class="ml-4">
+                                <div>
                                     @foreach ($category->children as $child)
                                         <div class="flex items-center mb-2 subcategory">
                                             <x-checkbox id="subcategory_{{ $child->id }}" type="checkbox"

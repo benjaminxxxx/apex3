@@ -54,6 +54,16 @@
                            class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
                            :class="{ 'text-orange-600': activeTab === 'grupos' }">Grupos</a>
                     </li>
+                    <li>
+                        <a href="#" @click.prevent="activeTab = 'eventos'"
+                           class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
+                           :class="{ 'text-orange-600': activeTab === 'eventos' }">Eventos</a>
+                    </li>
+                    <li>
+                        <a href="#" @click.prevent="activeTab = 'noticias'"
+                           class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
+                           :class="{ 'text-orange-600': activeTab === 'noticias' }">Noticias</a>
+                    </li>
                     @if(Auth::user()->hasPermission('add_projects'))
                     <li>
                         <a href="#" @click.prevent="activeTab = 'configuracion'"
@@ -68,17 +78,19 @@
     <div x-show="activeTab === 'inicio'" class="mt-4" id="panel_inicio">
         Contenido del panel de Inicio
     </div>
-
     <div x-show="activeTab === 'documentos'" class="mt-4" id="panel_documentos">
         <livewire:document-main :document_type="2" :document_project="$project->id"/>
     </div>
     <div x-show="activeTab === 'grupos'" class="mt-4" id="panel_grupos">
         <livewire:groups :project_id="$project->id"/>
     </div>
-    <div x-show="activeTab === 'miembros'" class="mt-4" id="panel_miembros">
-       
+    <div x-show="activeTab === 'eventos'" class="mt-4" id="panel_eventos">
+        <livewire:event-main :event_type="2"/>
     </div>
-
+    <div x-show="activeTab === 'noticias'" class="mt-4" id="panel_noticias">
+        <livewire:new-main :news_type="2"/>
+    </div>
+    
     <div x-show="activeTab === 'configuracion'" class="mt-4" id="panel_configuracion">
         <x-form-section submit="updateGroupData">
             <x-slot name="title">

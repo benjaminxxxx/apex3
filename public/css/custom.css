@@ -1,6 +1,17 @@
 *{
     font-family: Inter, sans-serif;
 }
+/*
+.grid__item,
+        .grid__col-sizer {
+            width: 49%;
+        }
+
+        .grid__item {
+            float: left;
+        }
+        .gutter-sizer { width: 2%; }
+        */
 .active-menu>li>a>span {
     transition: all 0.5s ease-in-out;
 }
@@ -94,6 +105,9 @@
     height: 24px;
     animation: spin 1s linear infinite;
 }
+.active-menu .on-open-block{
+    display: block;
+}
 /* Extra small devices (phones, less than 576px) */
 @media (min-width: 576px) {}
 
@@ -101,34 +115,46 @@
 @media (min-width: 768px) {}
 
 /* Medium devices (desktops, 768px and up) */
-@media (min-width: 992px) {}
-
-/* Large devices (large desktops, 992px and up) */
-@media (min-width: 1200px) {
-    /*input[type="text"],
-    input[type="number"],
-    input[type="email"],
-    textarea {
-        padding: 0.9rem 1.5rem !important;
-        font-size: 0.8rem !important;
-        margin-bottom: 1rem !important;
+@media (min-width: 1024px) {
+    .main-container {
+        margin-left: 110px;
+        width: calc(100% - 110px);
     }
-    input[type="submit"] {
-        padding: 0.9rem 2.5rem !important;
-        font-size: 0.9rem !important;
-        margin-bottom: 1.5rem;
+    .menu-width,
+    .top-aside {
+        width: 110px;
+    }
+    #logo-sidebar.menu-width:hover{
+        width: 330px;
+    }
+    #logo-sidebar.menu-width:hover .on-open-block{
+        display: block;
+    }
+    #logo-sidebar{
+        left: 0;
+        width: 110px;
+    }
+    .menu-width.active-menu-width,
+    .is-active-menu .top-aside {
+        width: 330px;
+    }
+    #logo-sidebar.menu-width.active-menu-width{
+        width: 330px;
+    }
     
-    }*/
 }
 
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1400px) {}
 
 /* Extra large devices (large desktops, 1600px and up) */
-@media (min-width: 1670px) {
+@media (min-width: 1537px) {
 
     .menu-width.active-menu-width,
     .is-active-menu .top-aside {
+        width: 110px;
+    }
+    #logo-sidebar.menu-width.active-menu-width {
         width: 110px;
     }
     #logo-sidebar{

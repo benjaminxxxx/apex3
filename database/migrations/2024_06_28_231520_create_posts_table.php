@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->char('code',15);
             $table->string('title');
             $table->text('content');
             $table->string('slug')->unique();
@@ -21,17 +21,8 @@ return new class extends Migration
             $table->boolean('allow_comments')->default(1); 
             $table->text('excerpt')->nullable(); 
             $table->enum('status', ['1', '0','2'])->default('1');
-            $table->enum('type', ['noticia', 'evento', 'publicacion', 'foro'])->default('noticia');
-
-            // Campos adicionales para eventos
-            $table->dateTime('starts_at')->nullable(); // Fecha y hora de inicio del evento
-            $table->dateTime('ends_at')->nullable();   // Fecha y hora de finalización del evento
-            $table->string('organizer')->nullable();   // Organizador del evento
-            $table->string('phone')->nullable();       // Teléfono de contacto
-            $table->string('email')->nullable();       // Correo de contacto
-            $table->string('location')->nullable();    // Local del evento
-            $table->string('website')->nullable();     // Página web del evento
-            $table->string('map')->nullable();         // URL del mapa del evento
+            $table->tinyInteger('type')->default(1); //noticias generales //noticias en proyetctos //noticias en grupos
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade'); 
             
             $table->timestamps();
         });

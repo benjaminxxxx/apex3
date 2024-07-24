@@ -21,7 +21,7 @@ class ProjectController extends Controller
   
         if(!Auth::user()->hasPermissionToManage($project->id))
             return view('project.denied');
-
+/*
         if(Auth::user()->role_id==4){
             $groups = Group::where('project_id', $project->id)
                         ->whereHas('partners', function ($query) {
@@ -29,7 +29,7 @@ class ProjectController extends Controller
                         })->get();
 
             return view('project.select_group',['groups'=>$groups]);
-        }
+        }*/
         
         return view('project.panel',['project_id'=>$project->id]);
     }

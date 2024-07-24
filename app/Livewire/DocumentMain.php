@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
 use App\Models\DocumentRole;
 use App\Models\Document;
+use App\Models\User;
+use Auth;
 
 class DocumentMain extends Component
 {
@@ -21,9 +23,53 @@ class DocumentMain extends Component
     public $description;
     public $visibility;
     public $documents;
+    public $user_to_search;
+    public $users;
+    public $user_to;
+    public $user_to_name;
+
     public function mount()
     {
         
+    }
+    public function checkVisibility(){
+        $this->user_to = null;
+        $this->user_to_name = null;
+        $this->user_to_search = '';
+        $this->users = null;
+    }
+    public function search()
+    {
+        if ($this->user_to_search) {
+            if (Auth::user()->role_id==1 || Auth::user()->role_id==2  ) {
+                $this->users = User::where(function ($query) {
+                    $query->where('name', 'like', '%' . $this->user_to_search . '%')
+                        ->orWhere('email', 'like', '%' . $this->user_to_search . '%');
+                })
+                    ->where('status', 1)
+                    ->get();
+            }else
+            {
+                $this->users = User::where(function ($query) {
+                    $query->where('name', 'like', '%' . $this->user_to_search . '%')
+                        ->orWhere('email', 'like', '%' . $this->user_to_search . '%');
+                })
+                    ->where('status', 1)
+                    ->where('role_id', 4)
+                    ->where('created_by', auth()->id())
+                    ->get();
+            }
+            
+        } else {
+            $this->users = null;
+        }
+    }
+    public function addMember($userId,$name)
+    {
+        $this->user_to = $userId;
+        $this->user_to_name = $name;
+        $this->user_to_search = '';
+        $this->users = null;
     }
     public function render()
     {
@@ -49,9 +95,14 @@ class DocumentMain extends Component
     }
     public function store()
     {
-        $this->validate([
+        $validationData = [
             'document_upload' => 'required|mimes:pdf,doc,docx,xls,xlsx|max:10240', // Máx 10MB
-        ]);
+        ];
+
+        if($this->visibility==5){
+            $validationData['user_to'] = 'required';
+        }
+        $this->validate($validationData);
 
         try {
             $storedPath = $this->storeFile($this->document_upload);
@@ -71,23 +122,30 @@ class DocumentMain extends Component
             if($this->document_type==3){
                 $documentData['group_id'] = $this->document_group;
             }
+            if($this->visibility==5){
+                $documentData['user_to'] = $this->user_to;
+            }
 
             $document = Document::create($documentData);
 
-            
+            $roles=[];
 
             if (empty($this->visibility)) {
                 $roles = [1, 2, 3, 4]; // Administradores, Gestores, Socios
             } else {
-                $roles = [$this->visibility];
+                if($this->visibility!=5){
+                    $roles = [$this->visibility];
+                }
             }
-
-            foreach ($roles as $role) {
-                DocumentRole::create([
-                    'document_id' => $document->id,
-                    'role_id' => $role,
-                ]);
+            if($roles){
+                foreach ($roles as $role) {
+                    DocumentRole::create([
+                        'document_id' => $document->id,
+                        'role_id' => $role,
+                    ]);
+                }
             }
+            
 
             session()->flash('message', 'Documento creado exitosamente.');
             $this->reset(['description', 'document_upload', 'visibility']);

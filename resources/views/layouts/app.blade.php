@@ -56,7 +56,7 @@
                             icon="icon-user-3" menu="Miembros" />
                     @endif
 
-                    <x-nav-link href="{{ route('eventos') }}" active="{{ request()->routeIs('eventos') }}"
+                    <x-nav-link href="{{ route('events') }}" active="{{ request()->routeIs('events') }}"
                         icon="icon-copy" menu="Eventos" />
                     <x-nav-link href="{{ route('charts') }}" active="{{ request()->routeIs('charts') }}"
                         icon="icon-analytics" menu="Gráficos" />

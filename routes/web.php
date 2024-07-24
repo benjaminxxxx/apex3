@@ -3,11 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GraficosController;
 use App\Http\Controllers\NoticiasController;
+use App\Http\Controllers\NewController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Middleware\CheckUserStatus;
+use App\Http\Controllers\EventController;
 
 
 Route::middleware([
@@ -38,8 +40,7 @@ Route::middleware([
     Route::get('/proyecto/{slug}', [ProjectController::class,'go'])->name('project');
     Route::get('/grupo/{slug}', [GroupController::class,'go'])->name('group.go');
 
-    Route::get('/noticia/{slug}', [PostController::class,'noticia'])->name('noticia');
-    Route::get('/evento/{slug}', [PostController::class,'evento'])->name('evento');
+    
     Route::get('/publicacion/{slug}', function () {
         return view('post.new');
     })->name('publicacion');
@@ -47,9 +48,12 @@ Route::middleware([
         return view('post.new');
     })->name('foro');
     
-    Route::get('/eventos', [PostController::class,'eventos'])->name('eventos');
-    Route::get('/noticias', [NoticiasController::class,'index'])->name('news');
-    Route::get('/noticias/cargar-mas-noticias', [NoticiasController::class, 'loadMoreNotices'])->name('news-load-more');
+    Route::get('/eventos', [EventController::class,'index'])->name('events');
+    Route::get('/evento/{slug}', [EventController::class,'show'])->name('event');
+
+    Route::get('/noticias', [NewController::class,'index'])->name('news');
+    //Route::get('/noticias/cargar-mas-noticias', [NoticiasController::class, 'loadMoreNotices'])->name('news-load-more');
+    Route::get('/noticia/{slug}', [NewController::class,'show'])->name('news.show');
     
     Route::get('/post/nuevo/{type?}', [PostController::class,'index'])->name('post.new');
 

@@ -183,17 +183,17 @@ class User extends Authenticatable
         }
     }
 
-    public function getMyNews($offset = 0, $take = 5)
+    public function getMyNews($offset = 0,$type=1, $take = 5)
     {
         $userRoleId = $this->role_id;
 
-        $query = Post::where('type', 'noticia')
+        $query = Post::where('type', $type)
             ->with('categories')
             ->latest()
             ->skip($offset)
             ->take($take);
 
-        if ($userRoleId != 1) {
+        if ($userRoleId != 1 && $userRoleId != 2) {
             $query->whereHas('visibilityLevels', function ($query) use ($userRoleId) {
                 $query->where('visibility_level', $userRoleId);
             });
@@ -280,7 +280,57 @@ class User extends Authenticatable
                 ->get();
         }
 
+        if ($this->role_id == 4) {
+
+                return Group::where('project_id', $projectId)
+                        ->whereHas('partners', function ($query) {
+                            $query->where('partner_id', $this->id);
+                        })->get();
+        }
+
         // Si el usuario tiene otro rol, no devolver ningún grupo
         return collect();
+    }
+    public function isAllowedToViewEvent($eventId)
+    {
+        $userRoleId = $this->role_id;
+
+        $isSuperAdmin = $userRoleId==1;
+
+        $isAdmin = $userRoleId==2;
+
+        // Verificar si el usuario tiene acceso basado en su rol
+        $hasRoleAccess = EventRole::where('event_id', $eventId)
+            ->where('role_id', $userRoleId)
+            ->exists();
+
+        // Verificar si el usuario es el creador del evento
+        $isCreator = Event::where('id', $eventId)
+            ->where('created_by', $this->id)
+            ->exists();
+
+        // El usuario puede ver el evento si tiene acceso basado en su rol o es el creador del evento
+        return $isSuperAdmin || $isAdmin || $hasRoleAccess || $isCreator;
+    }
+    public function isAllowedToViewArticle($articleId)
+    {
+        $userRoleId = $this->role_id;
+
+        $isSuperAdmin = $userRoleId==1;
+
+        $isAdmin = $userRoleId==2;
+
+        // Verificar si el usuario tiene acceso basado en su rol
+        $hasRoleAccess = PostVisibilityLevel::where('post_id', $articleId)
+            ->where('visibility_level', $userRoleId)
+            ->exists();
+
+        // Verificar si el usuario es el creador de la noticia
+        $isCreator = Post::where('id', $articleId)
+            ->where('created_by', $this->id)
+            ->exists();
+
+        // El usuario puede ver el evento si tiene acceso basado en su rol o es el creador de la noticia
+        return $isSuperAdmin || $isAdmin || $hasRoleAccess || $isCreator;
     }
 }

@@ -10,10 +10,10 @@ $classes = $active
     <a @if($hassubmenu) @click.prevent="open = !open" @else href="{{ $attributes->get('href', '#') }}" @endif
        {{ $attributes->merge(['class' => $classes]) }}>
         @if ($icon)
-            <i class="{{ $icon }} bg-white rounded-md p-2"></i>
+            <i class="{{ $icon }} bg-white rounded-md p-2 shadow-md"></i>
         @endif
         @if ($menu)
-            <span class="flex-1 ms-3 whitespace-nowrap text-sm">{{ $menu }}</span>
+            <span class="hidden 2xl:block on-open-block flex-1 ms-3 whitespace-nowrap text-sm">{{ $menu }}</span>
         @endif
     </a>
     @if ($hassubmenu)

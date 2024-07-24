@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Project;
 use App\Models\Group;
+use App\Models\User;
 use Auth;
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
@@ -14,6 +15,8 @@ class Groups extends Component
     public $groups;
     public $projectId;
     public $name;
+    public $managers;
+    public $manager_id;
     public function mount(){
          
     } 
@@ -21,11 +24,13 @@ class Groups extends Component
     {
         //$this->groups = Project::find($this->projectId)->groups()->get();
         $this->groups = Auth::user()->myGroups($this->projectId);
+        $this->managers = User::managers();
         return view('livewire.groups');
     }
 
     protected $rules = [
         'name' => 'required|string|max:255',
+        'manager_id' => 'required',
     ];
 
     public function store()
@@ -52,10 +57,10 @@ class Groups extends Component
             Group::create([
                 'name' => $this->name,
                 'slug' => $groupCode,
-                'manager_id' => Auth::id(),
+                'manager_id' => $this->manager_id,
                 'project_id'=>$this->projectId
             ]);
-            $this->reset(['name']);
+            $this->reset(['name','manager_id']);
             session()->flash('message', __('Group created successfully!'));
 
         } catch (QueryException $e) {

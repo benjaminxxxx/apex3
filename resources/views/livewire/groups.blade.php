@@ -1,20 +1,34 @@
 <div>
-    @if(Auth::user()->hasPermission('add_group'))
+    @if(Auth::user()->role_id==1 || Auth::user()->role_id==2)
     <x-card>
         @if ($errors->has('error_message'))
             <x-message-error>
                 {{ $errors->first('error_message') }}
             </x-message-error>
         @endif
-        <form wire:submit="store">
-            <x-h3>{{__('Create a new group')}}</x-h3>
+        <form wire:submit.prevent="store">
+            <x-h3>{{ __('Create a new group') }}</x-h3>
             <div class="flex items-center mt-2">
-                <x-input type="text" wire:model="name" placeholder="{{__('Group Name')}}" />
-                <x-button type="submit" class="ml-4">
-                    Crear Grupo
+                <div>
+                    <x-input type="text" wire:model="name" placeholder="{{ __('Group Name') }}" />
+                    <x-input-error for="name"/>
+                </div>
+                <div class="ml-4">
+                    <x-select wire:model="manager_id" placeholder="{{ __('Asignar Gestor') }}" >
+                        <option value="">{{ __('Asignar Gestor') }}</option>
+                        @foreach ($managers as $manager)
+                            <option value="{{ $manager->id }}">{{ $manager->name }}</option>
+                        @endforeach
+                    </x-select>
+                    <x-input-error for="manager_id"/>
+                </div>
+                
+                <x-button type="submit" class="ml-4 whitespace-nowrap">
+                    {{ __('Crear Grupo') }}
                 </x-button>
             </div>
-            <x-input-error for="name"/>
+            
+            
         </form>
     </x-card>
     @endif

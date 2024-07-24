@@ -16,7 +16,8 @@ class PostSeeder extends Seeder
 
         for ($i = 1; $i <= 15; $i++) {
             $post = Post::create([
-                'user_id' => 1,
+                'created_by' => 1,
+                'code' => \Str::random(15),
                 'title' => "Noticia de Informática $i",
                 'content' => "Contenido de la noticia de informática $i.",
                 'slug' => \Str::slug("Noticia de Informática $i"),
@@ -25,24 +26,7 @@ class PostSeeder extends Seeder
 
             $post->categories()->attach($newsCategory);
 
-            if ($i % 3 == 0) {
-                for ($j = 1; $j <= 3; $j++) {
-                    Comment::create([
-                        'post_id' => $post->id,
-                        'user_id' => 1,
-                        'parent_id' => null,
-                        'content' => "Comentario $j en Noticia de Informática $i."
-                    ]);
-                }
-            }
-
-            for ($k = 1; $k <= 3; $k++) {
-                Reaction::create([
-                    'post_id' => $post->id,
-                    'user_id' => 1,
-                    'type' => 'like'
-                ]);
-            }
+            
         }
     }
 }
