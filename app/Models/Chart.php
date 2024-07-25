@@ -12,12 +12,13 @@ class Chart extends Model
         'data',
         'user_id',
         'type',
+        'chart_type',
         'height',
         'title',
         'order_by',
         'showlabels',
         'showlegend',
-        'group_id'
+        'project_id'
     ];
     protected static function boot()
     {
@@ -29,12 +30,16 @@ class Chart extends Model
             } while (self::where('chart_id', $model->chart_id)->exists());
         });
     }
-    public function group()
+    public function project()
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(Project::class);
     }
     public function columns()
     {
         return $this->hasMany(ColumnChart::class);
+    }
+    public function rows()
+    {
+        return $this->hasMany(RowChart::class);
     }
 }

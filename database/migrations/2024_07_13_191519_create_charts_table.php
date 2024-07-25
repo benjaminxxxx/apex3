@@ -16,6 +16,7 @@ return new class extends Migration
             $table->char('chart_id', 10)->unique();
             $table->text('data');
             $table->unsignedBigInteger('user_id');
+            $table->tinyInteger('chart_type')->default(1);
             $table->string('type');
             $table->integer('height');
             $table->text('title');
@@ -23,11 +24,11 @@ return new class extends Migration
             $table->enum('showlabels', ['0', '1']);
             $table->enum('showlegend', ['0', '1']);
             $table->enum('status', ['1', '0','2'])->default('1');
-            $table->unsignedBigInteger('group_id')->nullable();
+            $table->unsignedBigInteger('project_id')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
         });
     }
 

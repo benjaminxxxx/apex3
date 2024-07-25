@@ -28,7 +28,18 @@ class Project extends Model
     {
         return $this->belongsToMany(User::class, 'manager_project', 'project_id', 'manager_id');
     }
-
+    public function partners()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            GroupPartner::class,
+            'group_id', // Foreign key on GroupPartner table...
+            'id', // Foreign key on User table...
+            'id', // Local key on Project table...
+            'partner_id' // Local key on GroupPartner table...
+        )->join('groups', 'groups.id', '=', 'group_partner.group_id')
+            ->where('groups.project_id', $this->id);
+    }
     public function groups()
     {
         return $this->hasMany(Group::class);

@@ -104,6 +104,11 @@
     <link href="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.6/build/vanilla-calendar.min.css"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    
+    <link rel="stylesheet" href="{{ asset('css/handsontable.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     @livewireScripts
     @stack('scripts')
 </body>
