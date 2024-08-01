@@ -58,8 +58,10 @@
 
                     <x-nav-link href="{{ route('events') }}" active="{{ request()->routeIs('events') }}"
                         icon="icon-copy" menu="Eventos" />
-                    <x-nav-link href="{{ route('charts') }}" active="{{ request()->routeIs('charts') }}"
-                        icon="icon-analytics" menu="Gráficos" />
+                    @if (Auth::user()->hasPermission('add_chart'))
+                        <x-nav-link href="{{ route('charts') }}" active="{{ request()->routeIs('charts') }}"
+                            icon="icon-analytics" menu="Gráficos" />
+                    @endif
                     <x-nav-link href="{{ route('documents') }}" active="{{ request()->routeIs('documents') }}"
                         icon="icon-telegram-2" menu="Documentos" />
                     <x-nav-link href="{{ route('news') }}" active="{{ request()->routeIs('news') }}"
@@ -105,10 +107,10 @@
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    
+
     <link rel="stylesheet" href="{{ asset('css/handsontable.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     @livewireScripts
     @stack('scripts')
 </body>

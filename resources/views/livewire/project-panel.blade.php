@@ -76,7 +76,7 @@
         </div>
     </x-pop>
     <div x-show="activeTab === 'inicio'" class="mt-4" id="panel_inicio">
-        Contenido del panel de Inicio
+        <livewire:project-charts :project_id="$project->id"/>
     </div>
     <div x-show="activeTab === 'documentos'" class="mt-4" id="panel_documentos">
         <livewire:document-main :document_type="2" :document_project="$project->id"/>

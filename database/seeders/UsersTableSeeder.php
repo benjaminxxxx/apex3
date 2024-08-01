@@ -27,10 +27,11 @@ class UsersTableSeeder extends Seeder
         $deleteNews = Permission::create(['name' => 'delete_news']);
         $addProjects = Permission::create(['name' => 'add_projects']);
         $addGroup = Permission::create(['name' => 'add_group']);
+        $addChart = Permission::create(['name' => 'add_chart']);
 
-        $superAdminRole->permissions()->attach([$addNews->id, $editNews->id, $deleteNews->id,$addProjects->id]);
-        $adminRole->permissions()->attach([$addNews->id, $editNews->id, $deleteNews->id,$addProjects->id]);
-        $managerRole->permissions()->attach([$addNews->id, $editNews->id, $deleteNews->id,$addGroup->id]);
+        $superAdminRole->permissions()->attach([$addNews->id, $editNews->id, $deleteNews->id, $addProjects->id,$addChart->id]);
+        $adminRole->permissions()->attach([$addNews->id, $editNews->id, $deleteNews->id, $addProjects->id,$addChart->id]);
+        $managerRole->permissions()->attach([$addNews->id, $editNews->id, $deleteNews->id, $addGroup->id]);
 
         // Crear un super administrador
         User::create([
@@ -71,8 +72,9 @@ class UsersTableSeeder extends Seeder
         ]);
 
         // Crear cuatro gestores
+        $managers = [];
         for ($i = 1; $i <= 4; $i++) {
-            User::create([
+            $managers[] = User::create([
                 'name' => 'Manager' . $i,
                 'email' => 'manager' . $i . '@hotmail.com',
                 'password' => Hash::make('12345678'),
@@ -84,7 +86,7 @@ class UsersTableSeeder extends Seeder
                 'nickname' => '3456789' . $i, // DNI ficticio de 8 dígitos
             ]);
         }
-
+/*
         // Crear diez socios
         for ($i = 1; $i <= 10; $i++) {
             User::create([
@@ -97,7 +99,8 @@ class UsersTableSeeder extends Seeder
                 'address' => '789 Oak Street Apt ' . $i,
                 'user_code' => Str::random(20),
                 'nickname' => '4567890' . $i, // DNI ficticio de 8 dígitos
+                'created_by' => $managers[array_rand($managers)]->id, // Asignar gestor aleatorio
             ]);
-        }
+        }*/
     }
 }

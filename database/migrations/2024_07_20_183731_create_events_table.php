@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('cover_image')->nullable();
             $table->text('content');
             $table->tinyInteger('type')->default(1); // 1: Global, 2: Project
+            $table->unsignedBigInteger('project_id')->nullable();
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade'); // Referencia al usuario que creó el evento
             $table->timestamps();
         });

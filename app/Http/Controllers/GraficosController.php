@@ -9,7 +9,12 @@ use App\Models\Chart;
 
 class GraficosController extends Controller
 {
-    public function index($chart_id = null){
+    public function index(){
+        if (!Auth::user()->hasPermission('add_chart'))
+        {
+            return view('chart.denied');
+        }
+        /*
         $charts = Chart::all();
         
         $data = [
@@ -29,9 +34,10 @@ class GraficosController extends Controller
                 $data['chart'] = $chart;
             }
         }
-        
-        return view('admin.graficos',$data);
+        */
+        return view('admin.graficos');
     }
+    /*
     public function import_document(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -126,6 +132,6 @@ class GraficosController extends Controller
         }
         return $csvData;
     }
-
+*/
     
 }

@@ -27,13 +27,15 @@
                 $url_cover_image = asset('storage/' . $event->cover_image);
             @endphp
             <article>
-                <p class="text-md text-gray-500">
+                <div class="clearfix">
                     @if ($event->cover_image)
                         <img src="{{ $url_cover_image }}" alt="Descripción de la imagen"
-                            class="w-1/2 h-auto float-left rounded-lg shadow-md mr-8 mb-8">
+                            class="w-1/2 h-auto float-left rounded-lg shadow-md mr-8 mb-4">
                     @endif
-                    {!! $event->content !!}
-                </p>
+                    <p class="text-md text-gray-500">
+                        {!! $event->content !!}
+                    </p>
+                </div>
             </article>
             <x-hr />
             <div class="grid grid-cols-4 gap-10">

@@ -32,6 +32,15 @@ class Event extends Model
     {
         return Carbon::parse($this->updated_at)->diffForHumans();
     }
+    public function getCoverImageUrlAttribute()
+    {
+        if ($this->cover_image) {
+            return asset('storage/' . $this->cover_image);
+        } else {
+            return 'https://picsum.photos/500/200';
+        }
+    }
+    /*
     public function getFileUrlAttribute()
     {
         // Verifica si el archivo existe en el almacenamiento público
@@ -43,4 +52,5 @@ class Event extends Model
         // Devuelve una URL de un icono predeterminado si el archivo no existe
         return asset('images/default-icon.svg');
     }
+        */
 }

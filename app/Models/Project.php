@@ -26,7 +26,8 @@ class Project extends Model
 
     public function managers()
     {
-        return $this->belongsToMany(User::class, 'manager_project', 'project_id', 'manager_id');
+        return $this->belongsToMany(Group::class, 'manager_id');
+        //return $this->belongsToMany(User::class, 'manager_project', 'project_id', 'manager_id');
     }
     public function partners()
     {
@@ -52,6 +53,9 @@ class Project extends Model
     {
         return $this->belongsToMany(User::class);
     }
+    public function charts(){
+        return $this->hasMany(Chartpublish::class);
+    }
     public function getCoverImageUrlAttribute()
     {
         if ($this->cover_image) {
@@ -68,4 +72,5 @@ class Project extends Model
             return 'https://picsum.photos/100/100';
         }
     }
+    
 }

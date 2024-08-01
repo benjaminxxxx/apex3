@@ -228,9 +228,52 @@
             </x-button>
         </x-slot>
     </x-dialog-modal>
-    <x-card wire:ignore class="max-h-[30rem] hidden panel-grafico">
-        <canvas id="myChartLive"></canvas>
-    </x-card>
+    <div wire:ignore class=" hidden panel-grafico">
+        <div class="md:flex gap-5 h-full">
+            <x-card class="flex-1 max-h-[30rem] flex justify-center">
+                <canvas id="myChartLive"></canvas>
+            </x-card>
+            <x-card class="lg:w-96">
+
+                <div class="mt-4">
+                    <x-label for="chart_title">Título del Gráfico</x-label>
+                    <x-input type="text" id="chart_title" wire:model="chart_title" name="chart_title" onkeyup="updateChartConfig()" />
+                </div>
+                <div class="mt-4">
+                    <x-label for="chart_title">Mensaje de tu publicación</x-label>
+                    <x-textarea rows="3" wire:model="chart_description" name="chart_description" />
+                </div>
+                <div class="mt-4">
+                    <x-label>Tipo de gráfico</x-label>
+                    <x-select name="chart_type" wire:model="chartType" id="chartType" onchange="updateChartConfig()">
+                        <option value="bar">Barras</option>
+                        <option value="line">Líneas</option>
+                        <option value="radar">Radar</option>
+                        <option value="pie">Torta</option>
+                        <option value="doughnut">Dona</option>
+                        <option value="polarArea">Polar</option>
+                    </x-select>
+                </div>
+                <div class="mt-4">
+                    <x-label for="showlabels"> <input type="checkbox" wire:model="showlabels" id="showlabels" name="showlabels"
+                            onchange="updateChartConfig()"> Mostrar
+                        Etiquetas</x-label>
+
+                </div>
+                <div class="mt-4">
+                    <x-label for="showlegend"> <input type="checkbox" wire:model="showlegend" id="showlegend" name="showlegend"
+                            onchange="updateChartConfig()"> Mostrar
+                        Leyenda</x-label>
+
+                </div>
+                <div class="mt-4">
+                    <x-button id="publish-chart" class="w-full" wire:click="publishChart">
+                        Publicar gráfico
+                    </x-button>
+                </div>
+            </x-card>
+        </div>
+    </div>
     @if (session()->has('message'))
         <x-toast class="bg-green-600">
             {{ session('message') }}
@@ -241,115 +284,122 @@
             {{ session('error') }}
         </x-toast>
     @endif
+
     
-    @script
-        <script>
-            const ctx = document.getElementById('myChartLive').getContext('2d');
-            let chartInstance;
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('myChartLive').getContext('2d');
+        let chartInstance;
 
-            function generarDatosParaChart(rowHeaders, myData) {
-                const colors = [
-                    '#f59e0b',
-                    '#8b5cf6',
-                    '#d946ef',
-                    '#3b82f6',
-                    '#84cc16',
-                ];
-                const chartData = [];
-                for (let i = 0; i < rowHeaders.length; i++) {
-                    chartData.push({
-                        label: rowHeaders[i],
-                        data: myData[i],
-                        borderWidth: 1,
-                        backgroundColor: colors[i % colors.length]
-                    });
-                }
-
-                return chartData;
+        function generarDatosParaChart(rowHeaders, myData) {
+            const colors = [
+                '#f59e0b',
+                '#8b5cf6',
+                '#d946ef',
+                '#3b82f6',
+                '#84cc16',
+            ];
+            const chartData = [];
+            for (let i = 0; i < rowHeaders.length; i++) {
+                chartData.push({
+                    label: rowHeaders[i],
+                    data: myData[i],
+                    borderWidth: 1,
+                    backgroundColor: colors[i % colors.length]
+                });
             }
-
-            const config = {
-                type: 'polarArea', // Default chart type
-                data: {
-                    //labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'],
-                    datasets: [{
-                        label: 'Ventas Mensuales',
-                        data: {},
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Chart.js PolarArea Chart'
-                        }
-                    }
-                }
-            };
-
-            const updateChart = (columnsHeader, rowHeader, dataAll) => {
-
-                const card = document.querySelector('.panel-grafico');
-        if (card.classList.contains('hidden')) {
-            card.classList.remove('hidden');
+            return chartData;
         }
 
-                const chartType = 'bar';
-                const chartHeight = 200;
-                const showLabels = true;
-                const showLegend = true;
+        const config = {
+            type: 'bar',  // Tipo de gráfico por defecto
+            data: {},
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: ''
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true
+                    }
+                }
+            }
+        };
 
-                const headers = columnsHeader;
+        window.updateChartConfig = function() {
+            const chartType = document.getElementById('chartType').value;
+            const showLabels = document.getElementById('showlabels').checked;
+            const showLegend = document.getElementById('showlegend').checked;
+            const chartTitle = document.getElementById('chart_title').value;
 
-                console.log(headers);
-                const rowHeaders = rowHeader;
-
-                const totalData = generarDatosParaChart(rowHeaders, dataAll);
-                totalDataGeneral = totalData.length;
-                config.data.labels = headers;
-                config.data.datasets = totalData;
-                config.type = chartType;
-            
-                config.options.plugins.legend.display = showLegend;
-                config.options.plugins.title.text = "modelo de leyenda";
+            config.type = chartType;
+            if (chartType === 'radar' || chartType === 'polarArea') {
+                config.options.scales = {};  // Clear default scales
+            } else {
                 config.options.scales = {
                     x: {
                         display: showLabels
+                    },
+                    y: {
+                        display: true
                     }
                 };
-                if (chartInstance) {
-                    chartInstance.destroy();
-                }
+            }
+            config.options.plugins.legend.display = showLegend;
+            config.options.plugins.title.text = chartTitle;
+            //config.options.scales.x.display = showLabels;
 
-                document.getElementById('myChartLive').height = chartHeight;
-                chartInstance = new Chart(ctx, config);
-            };
-/*
-            const ch = ['2', '3'];
-            const rh = ['juan', 'maria', 'jose'];
-            const dt = [
-                ['12', '12', '12', '12.50', '13.50', '14'],
-                ['210', '220', '230', '240', '250', '260'],
-                ['300', '310', '320', '330', '340', '350'],
-                ['400', '410', '420', '430', '440', '450'],
-                ['500', '510', '520', '530', '540', '550']
-            ];
-            
-            updateChart(ch, rh, dt);
-*/
-            Livewire.on('loadChart', (data) => {
-                const columnsHeader = data.columnsHeader;
-                const rowHeader = data.rowHeader;
-                const dataAll = data.data;
-                
-                updateChart(columnsHeader, rowHeader, dataAll);
-            });
-        </script>
-    @endscript
+            // Clean up chart before creating a new one
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            // Create a new chart
+            chartInstance = new Chart(ctx, config);
+        }
+
+        function updateChart(columnsHeader, rowHeader, dataAll) {
+            const card = document.querySelector('.panel-grafico');
+            if (card && card.classList.contains('hidden')) {
+                card.classList.remove('hidden');
+            }
+
+            const headers = columnsHeader;
+            const rowHeaders = rowHeader;
+            const totalData = generarDatosParaChart(rowHeaders, dataAll);
+
+            config.data.labels = headers;
+            config.data.datasets = totalData;
+
+            // Clean up chart before creating a new one
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            // Create a new chart
+            chartInstance = new Chart(ctx, config);
+        }
+
+        Livewire.on('loadChart', (data) => {
+            const columnsHeader = data.columnsHeader;
+            const rowHeader = data.rowHeader;
+            const dataAll = data.data;
+
+            updateChart(columnsHeader, rowHeader, dataAll);
+        });
+
+        // Initialize the chart with default settings
+        updateChartConfig();
+    });
+</script>
+@endpush
 </div>

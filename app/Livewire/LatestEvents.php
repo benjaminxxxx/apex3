@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Models\Post;
 use Auth;
 
-class LatestNews extends Component
+class LatestEvents extends Component
 {
     public $take = 5;
     public $widthImage = false;
@@ -14,8 +14,8 @@ class LatestNews extends Component
     public function render()
     {
 
-        $data['noticias'] = Auth::user()->news()->latest('created_at')->take($this->take)->get();
+        $data['events'] = Auth::user()->events()->latest('created_at')->take($this->take)->get();
 
-        return view('livewire.latest-news', $data);
+        return view('livewire.latest-events', $data);
     }
 }

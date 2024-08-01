@@ -22,6 +22,8 @@ return new class extends Migration
             $table->text('excerpt')->nullable(); 
             $table->enum('status', ['1', '0','2'])->default('1');
             $table->tinyInteger('type')->default(1); //noticias generales //noticias en proyetctos //noticias en grupos
+            $table->unsignedBigInteger('project_id')->nullable();
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade'); 
             
             $table->timestamps();

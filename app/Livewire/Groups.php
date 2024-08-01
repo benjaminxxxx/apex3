@@ -54,6 +54,9 @@ class Groups extends Component
                 $groupCode = $slug;
             }
 
+            //si no esta administrando el proyecto donde se le esta asignando, agrgear los permisos para que acceda
+         
+
             Group::create([
                 'name' => $this->name,
                 'slug' => $groupCode,

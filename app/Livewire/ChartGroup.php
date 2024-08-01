@@ -12,6 +12,8 @@ use App\Models\ColumnChart;
 use App\Models\RowChart;
 use App\Models\PartnerColumn;
 use App\Models\RowColumn;
+use App\Models\Chartpublish;
+use Illuminate\Support\Str;
 use DB;
 
 
@@ -38,6 +40,12 @@ class ChartGroup extends Component
     public $isFormData = false;
     public $isChartSelected = false;
     public $chartToShow;
+    public $chartType = "bar";
+    public $chart_title = "";
+    public $showlegend = true;
+    public $showlabels = true;
+    public $chartToPublish;
+    public $chart_description;
     public function mount()
     {
         $this->projects = Project::all();
@@ -50,11 +58,12 @@ class ChartGroup extends Component
 
     public function showchart($chartId)
     {
-
         try {
+
             $chart = Chart::where('chart_id', $chartId)->first();
             if ($chart) {
                 $this->selectedChart = $chart;
+                $this->chartToPublish = $chart->id;
                 $this->loadChartData();
                 //$this->chartToShow = $chart;
                 $project = Project::find($chart->project_id);
@@ -146,6 +155,26 @@ class ChartGroup extends Component
             $this->partners = $this->theGroup->partners()->get();
             $this->charts = $this->theGroup->charts;
         }
+    }
+    public function publishChart(){
+        
+        $data = $this->selectedChart->data;
+        $code = Str::random(10);
+        $user_id = Auth::id();
+
+        Chartpublish::create([
+            'code' => $code,
+            'data' => json_encode($data), // Asegurarse de codificar los datos como JSON
+            'chart_type' => $this->selectedChart->chart_type,
+            'type' =>  $this->chartType,
+            'title' => $this->chart_title,
+            'description'=>$this->chart_description,
+            'showlabels' => $this->showlabels ? '1' : '0',
+            'showlegend' => $this->showlegend ? '1' : '0',
+            'chart_id' => $this->selectedChart->id,
+            'user_id' => $user_id,
+            'project_id' => $this->selectedChart->project_id,
+        ]);
     }
     public function selectChart()
     {

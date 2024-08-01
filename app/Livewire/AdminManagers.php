@@ -149,7 +149,7 @@ class AdminManagers extends Component
                 session()->flash('message', 'Usuario actualizado con éxito.');
 
             }
-
+/*
             DB::table('manager_project')->where('manager_id', $user->id)->delete();
 
             if (!empty($this->managedProjects)) {
@@ -163,7 +163,7 @@ class AdminManagers extends Component
                     ]);
                 }
             }
-
+*/
             $this->closeForm();
         } catch (QueryException $e) {
             session()->flash('error', 'Hubo un error al crear el usuario: ' . $e->getMessage());

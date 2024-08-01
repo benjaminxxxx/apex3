@@ -29,7 +29,7 @@ class ProjectSeeder extends Seeder
                     'project_code' => Str::slug('Project ' . $projectCounter),
                     'administrator_id' => $admin->id,
                 ]);
-
+/*
                 // Asignar 2 gestores diferentes al proyecto
                 $assignedManagers = $managers->random(2);
                 foreach ($assignedManagers as $manager) {
@@ -98,7 +98,7 @@ class ProjectSeeder extends Seeder
                         }
                     }
                     
-                }
+                }*/
 
                 $projectCounter++;
             }

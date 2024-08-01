@@ -17,7 +17,7 @@
                         @endforeach
                     </div>
 
-                    <a href="{{route($post->type,['slug'=>$post->slug])}}" class="mb-4 text-4xl text-white hover:text-yellow-500 transition md:text-3xl lg:text-4xl font-semibold">
+                    <a href="{{route("news.show",['slug'=>$post->slug])}}" class="mb-4 text-4xl text-white hover:text-yellow-500 transition md:text-3xl lg:text-4xl font-semibold">
                         {{ $post->title }}
                     </a>
                     
@@ -30,5 +30,9 @@
             </div>
         </section>
     </div>
+    @else
+    <x-card>
+        Aún no tenemos noticias publicadas
+    </x-card>
     @endif
 </div>

@@ -1,6 +1,11 @@
 *{
     font-family: Inter, sans-serif;
 }
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
 /*
 .grid__item,
         .grid__col-sizer {

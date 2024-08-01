@@ -78,6 +78,11 @@ class User extends Authenticatable
     {
         return self::where('role_id', 3)->get();
     }
+
+    public function partners()
+    {
+        return $this->hasMany(User::class, 'created_by');
+    }
     public function hasPermission($permissionName)
     {
         $role = $this->role;
@@ -183,7 +188,7 @@ class User extends Authenticatable
         }
     }
 
-    public function getMyNews($offset = 0,$type=1, $take = 5)
+    public function getMyNews($offset = 0, $type = 1, $take = 5)
     {
         $userRoleId = $this->role_id;
 
@@ -218,7 +223,7 @@ class User extends Authenticatable
     }
     public function managedProjects()
     {
-        return $this->belongsToMany(Project::class, 'manager_project', 'manager_id', 'project_id');
+        return $this->belongsToMany(Project::class, 'groups', 'manager_id', 'project_id');
     }
     public function projectsAsPartner()
     {
@@ -282,10 +287,10 @@ class User extends Authenticatable
 
         if ($this->role_id == 4) {
 
-                return Group::where('project_id', $projectId)
-                        ->whereHas('partners', function ($query) {
-                            $query->where('partner_id', $this->id);
-                        })->get();
+            return Group::where('project_id', $projectId)
+                ->whereHas('partners', function ($query) {
+                    $query->where('partner_id', $this->id);
+                })->get();
         }
 
         // Si el usuario tiene otro rol, no devolver ningún grupo
@@ -295,9 +300,9 @@ class User extends Authenticatable
     {
         $userRoleId = $this->role_id;
 
-        $isSuperAdmin = $userRoleId==1;
+        $isSuperAdmin = $userRoleId == 1;
 
-        $isAdmin = $userRoleId==2;
+        $isAdmin = $userRoleId == 2;
 
         // Verificar si el usuario tiene acceso basado en su rol
         $hasRoleAccess = EventRole::where('event_id', $eventId)
@@ -316,9 +321,9 @@ class User extends Authenticatable
     {
         $userRoleId = $this->role_id;
 
-        $isSuperAdmin = $userRoleId==1;
+        $isSuperAdmin = $userRoleId == 1;
 
-        $isAdmin = $userRoleId==2;
+        $isAdmin = $userRoleId == 2;
 
         // Verificar si el usuario tiene acceso basado en su rol
         $hasRoleAccess = PostVisibilityLevel::where('post_id', $articleId)
@@ -332,5 +337,81 @@ class User extends Authenticatable
 
         // El usuario puede ver el evento si tiene acceso basado en su rol o es el creador de la noticia
         return $isSuperAdmin || $isAdmin || $hasRoleAccess || $isCreator;
+    }
+    public function news()
+    {
+        // Obtener el role_id del usuario autenticado
+        $roleId = $this->role_id;
+
+        // Si el role_id es 1 o 2, devolver una query sin restricciones
+        if (in_array($roleId, [1, 2])) {
+            return Post::query();
+        }
+
+        // Obtener los IDs de los posts que tienen el mismo nivel de visibilidad que el role_id del usuario
+        $postIds = PostVisibilityLevel::where('visibility_level', $roleId)
+            ->pluck('post_id');
+
+        // Devolver una query para los posts que coinciden con los IDs obtenidos
+        return Post::whereIn('id', $postIds);
+    }
+    public function events()
+    {
+        // Obtener el role_id del usuario autenticado
+        $roleId = $this->role_id;
+
+        // Si el role_id es 1 o 2, devolver una query sin restricciones
+        if (in_array($roleId, [1, 2])) {
+            return Event::query();
+        }
+
+        // Obtener los IDs de los events que tienen el mismo nivel de visibilidad que el role_id del usuario
+        $eventsIds = EventRole::where('role_id', $roleId)
+            ->pluck('event_id');
+
+        // Devolver una query para los posts que coinciden con los IDs obtenidos
+        return Event::whereIn('id', $eventsIds);
+    }
+    public function documents()
+    {
+        // Obtener el role_id del usuario autenticado
+        $roleId = $this->role_id;
+
+        // Si el role_id es 1 o 2, devolver una query sin restricciones
+        if (in_array($roleId, [1, 2])) {
+            return Document::query();
+        }
+
+        // Obtener los IDs de los documents que tienen el mismo nivel de visibilidad que el role_id del usuario
+        $documentsIds = DocumentRole::where('role_id', $roleId)
+            ->pluck('document_id');
+
+        // Devolver una query para los documents que coinciden con los IDs obtenidos
+        return Document::whereIn('id', $documentsIds);
+    }
+    public function getChartPublishes()
+    {
+        // Obtener el role_id del usuario autenticado
+        $roleId = $this->role_id;
+
+        // Si el role_id es 1 o 2 (Super Administrador o Administrador), devolver todos los gráficos publicados sin restricciones
+        if (in_array($roleId, [1, 2])) {
+            return Chartpublish::query();
+        }
+
+        if ($roleId == 3) {
+            // Si es Manager, obtener todos los gráficos donde el manager tiene proyectos a cargo
+            $projectIds = $this->managedProjects()->pluck('project_id')->toArray();
+            return Chartpublish::whereIn('project_id', $projectIds);
+        }
+
+        if ($roleId == 4) {
+            // Si es Socio, obtener todos los gráficos para los proyectos en los que es socio
+            $projectIds = $this->projectsAsPartner()->pluck('id')->toArray();
+            return Chartpublish::whereIn('project_id', $projectIds);
+        }
+
+        // Si no coincide con ninguno de los roles anteriores, devolver una consulta vacía
+        return Chartpublish::whereRaw('1 = 0'); // Consulta vacía
     }
 }
