@@ -100,7 +100,7 @@
         integrity="sha512-JRlcvSZAXT8+5SQQAvklXGJuxXTouyq8oIMaYERZQasB8SBDHZaUbeASsJWpk0UUrf89DP3/aefPPrlMR1h1yQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src='https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.js'></script>
-    <script src="https://cdn.tiny.cloud/1/0t7v1pq1uxcl2ehyauztppdjsypqly9r55zipgmeqwbvu77q/tinymce/5/tinymce.min.js"
+    <script src="https://cdn.tiny.cloud/1/wwa1k22ylsxpnyyeauargsi7ct5wtdms8lqgzw6scq97pwh8/tinymce/5/tinymce.min.js"
         referrerpolicy="origin"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.6/build/vanilla-calendar.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.6/build/vanilla-calendar.min.css"

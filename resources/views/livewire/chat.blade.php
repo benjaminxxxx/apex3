@@ -183,7 +183,7 @@
                 const userAliasData = "{{ Auth::user()->user_code }}";
                 const notificationSound = document.getElementById('notification-sound');
 
-                const socket = io('http://localhost:3000', {
+                const socket = io('https://perudevsolutions.com', {
                     query: `user=${encodeURIComponent(userAliasData)}`
                 });
 

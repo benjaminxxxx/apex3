@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://apexally.test",
+    origin: "https://apexally.es",
     methods: ["GET", "POST"]
   }
 });
@@ -79,5 +79,5 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
-  console.log(`Servidor de Socket.IO escuchando en http://localhost:${PORT}`);
+  console.log(`Servidor de Socket.IO escuchando en https://apexally.es:${PORT}`);
 });
