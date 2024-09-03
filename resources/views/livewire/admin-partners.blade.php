@@ -47,18 +47,18 @@
                                         <i class="icon-pencil"></i>
                                     </x-secondary-button>
                                     @if ($partner->status == '0')
-                                        <x-warning-button wire:click="enable('{{ $partner->user_code }}')"
+                                        <x-warning-button @click="$dispatch('askEnableUser', { userId: {{ $partner->id }} })"  
                                             class="ml-1">
                                             <i class="icon-block"></i>
                                         </x-warning-button>
                                     @else
-                                        <x-success-button wire:click="disable('{{ $partner->user_code }}')"
+                                        <x-success-button @click="$dispatch('askDisableUser', { userId: {{ $partner->id }} })"  
                                             class="ml-1">
                                             <i class="icon-check"></i>
                                         </x-success-button>
                                     @endif
                                     @if ($totalProjects == 0)
-                                        <x-danger-button wire:click="confirmDelete('{{ $partner->user_code }}')"
+                                        <x-danger-button @click="$dispatch('askDeleteUser', { userId: {{ $partner->id }} })"
                                             class="ml-1">
                                             <i class="icon-trash"></i>
                                         </x-danger-button>

@@ -76,8 +76,7 @@ class ProjectHome extends Component
     {
         try {
             $project = Project::findOrFail($projectId);
-            $project->status = 2;
-            $project->save();
+            $project->delete();
             session()->flash('message', 'Proyecto eliminado');
 
         } catch (QueryException $e) {

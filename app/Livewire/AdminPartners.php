@@ -21,7 +21,6 @@ class AdminPartners extends Component
     public $assignedProjects = [];
     public $assignedGroups = [];
     public $isEditing;
-    public $isDeleting;
     public $user_code;
     public $userCodeToDelete;
 
@@ -36,7 +35,7 @@ class AdminPartners extends Component
     public $phone;
     public $address;
 
-
+    protected $listeners = ['userModified'=>'$refresh'];
     public function mount()
     {
         $this->roles = Role::where(['id' => '4'])->get();
@@ -191,68 +190,7 @@ class AdminPartners extends Component
 
         $this->closeForm();
     }
-    public function enable($userCode)
-    {
-        try {
-            $user = User::where('user_code', $userCode)->firstOrFail();
-            $user->status = '1';
-            $user->save();
-
-            session()->flash('message', 'Usuario habilitado correctamente.');
-        } catch (QueryException $e) {
-            session()->flash('error', 'No se pudo habilitar el usuario.');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Ocurrió un error al habilitar el usuario.' . $e->getMessage());
-        }
-    }
-
-    public function disable($userCode)
-    {
-        try {
-            $user = User::where('user_code', $userCode)->firstOrFail();
-            $user->status = '0';
-            $user->save();
-
-            session()->flash('message', 'Usuario deshabilitado correctamente.');
-        } catch (QueryException $e) {
-            session()->flash('error', 'No se pudo deshabilitar el usuario.');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Ocurrió un error al deshabilitar el usuario.' . $e->getMessage());
-        }
-    }
-    public function confirmDelete($userCode)
-    {
-        $this->userCodeToDelete = $userCode;
-        $this->isDeleting = true;
-    }
-    public function deleteUser()
-    {
-        if ($this->userCodeToDelete) {
-            try {
-                $user = User::where('user_code', $this->userCodeToDelete)->firstOrFail();
-
-                Friendship::where('user_id', Auth::id())->where('friend_id', $user->id)->delete();
-                Friendship::where('user_id', $user->id)->where('friend_id', Auth::id())->delete();
-
-                $user->delete();
-
-                session()->flash('message', 'Usuario eliminado correctamente.');
-            } catch (QueryException $e) {
-                // Manejo de la excepción de consulta
-                session()->flash('error', 'No se pudo eliminar el usuario. Asegúrate de que no tenga dependencias.');
-            } catch (\Exception $e) {
-                // Manejo de otras excepciones
-                session()->flash('error', 'Ocurrió un error al eliminar el usuario.' . $e->getMessage());
-            }
-        }
-        $this->userCodeToDelete = null;
-        $this->isDeleting = false;
-    }
-    public function cancelDelete()
-    {
-        $this->userCodeToDelete = null;
-        $this->isDeleting = false;
-    }
+   
     public function openForm()
     {
         $this->resetForm();

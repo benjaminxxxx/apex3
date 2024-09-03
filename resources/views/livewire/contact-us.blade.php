@@ -8,6 +8,8 @@
     <x-loading wire:loading wire:target="submitForm" />
     
     <form wire:submit.prevent="submitForm" >
+
+        <x-label>Si necesitas ayuda, rellena el formulario y nos pondremos en contacto contigo lo antes posible.</x-label>
         
         <x-input wire:model="name" placeholder="Tu nombre"  class="mt-6"/>
         <x-input-error for="name"/>

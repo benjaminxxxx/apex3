@@ -96,13 +96,13 @@
         </x-slot>
 
         <x-slot name="content">
-            <div class="sm:flex sm:items-start">
-                <div class="sm:flex-shrink-0">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
                     <!-- User Avatar -->
                     <img class="w-14 h-14 rounded-full mr-2" src="{{ Auth::user()->profile_photo_url }}"
                         alt="User Avatar">
                 </div>
-                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                <div class="mt-0 ml-4 text-left w-full">
                     <!-- User Input -->
                     <x-label class="font-semibold">{{ Auth::user()->fullName }}</x-label>
                     <!-- Combo Box -->

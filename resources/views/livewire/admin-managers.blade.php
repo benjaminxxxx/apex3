@@ -34,18 +34,18 @@
                                         <i class="icon-pencil"></i>
                                     </x-secondary-button>
                                     @if ($manager->status == '0')
-                                        <x-warning-button wire:click="enable('{{ $manager->user_code }}')"
+                                        <x-warning-button @click="$dispatch('askEnableUser', { userId: {{ $manager->id }} })" 
                                             class="ml-1">
                                             <i class="icon-block"></i>
                                         </x-warning-button>
                                     @else
-                                        <x-success-button wire:click="disable('{{ $manager->user_code }}')"
+                                        <x-success-button @click="$dispatch('askDisableUser', { userId: {{ $manager->id }} })" 
                                             class="ml-1">
                                             <i class="icon-check"></i>
                                         </x-success-button>
                                     @endif
                                     @if ($manager->managedProjects->count() == 0)
-                                        <x-danger-button wire:click="confirmDelete('{{ $manager->user_code }}')"
+                                        <x-danger-button @click="$dispatch('askDeleteUser', { userId: {{ $manager->id }} })" 
                                             class="ml-1">
                                             <i class="icon-trash"></i>
                                         </x-danger-button>
@@ -148,22 +148,6 @@
         </x-slot>
     </x-dialog-modal>
 
-    <x-confirmation-modal id="confirmDeleteModal" wire:model="isDeleting">
-        <x-slot name="title">
-            Confirmar Eliminación
-        </x-slot>
-        <x-slot name="content">
-            ¿Estás seguro que deseas eliminar este usuario?
-        </x-slot>
-        <x-slot name="footer">
-            <x-secondary-button wire:click="cancelDelete">
-                Cancelar
-            </x-secondary-button>
-            <x-danger-button wire:click="deleteUser" class="ml-2">
-                Eliminar
-            </x-danger-button>
-        </x-slot>
-    </x-confirmation-modal>
 
     @if (session()->has('message'))
         <x-toast class="bg-green-600">

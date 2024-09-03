@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use App\Models\Post;
 use App\Models\Category;
@@ -15,6 +16,7 @@ use Illuminate\Database\QueryException;
 class AdminPost extends Component
 {
     use WithFileUploads;
+    use LivewireAlert;
     public $postId;
     public $posts;
     public $categories;
@@ -268,6 +270,7 @@ class AdminPost extends Component
 
     public function disable($PostId)
     {
+        
         $user = Post::findOrFail($PostId);
         $user->status = '0'; 
         $user->save();

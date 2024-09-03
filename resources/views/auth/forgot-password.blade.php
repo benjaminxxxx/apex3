@@ -4,8 +4,8 @@
             <x-authentication-card-logo />
         </x-slot>
 
-        <div class="mb-4 text-sm text-gray-600 px-2 md:px-10 text-center">
-            ¿Olvidaste tu contraseña? No hay problema. Simplemente indícanos tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña, que te permitirá elegir una nueva.
+        <div class="mb-4 text-sm text-white md:text-gray-600 px-10 text-center">
+            {{__('messages.forgot_password')}}
         </div>
 
         @session('status')
@@ -14,19 +14,19 @@
             </div>
         @endsession
 
-        <x-validation-errors class="mb-4" />
+        <x-validation-errors class="mb-4 mx-10" />
 
-        <form method="POST" action="{{ route('password.email') }}">
+        <form method="POST" action="{{ route('password.email') }}" class="w-full px-10 max-w-[24rem]">
             @csrf
 
             <div class="block">
-                <x-label for="email" value="{{ __('Email') }}" />
+                <x-label for="email" class="text-white md:text-gray-600" value="{{ __('Email') }}" />
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Email Password Reset Link') }}
+                <x-button class="w-full">
+                    {{ __('messages.email_password_reset_link') }}
                 </x-button>
             </div>
         </form>

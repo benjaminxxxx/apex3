@@ -44,6 +44,55 @@ class Chart extends Model
     {
         return $this->hasMany(RowChart::class);
     }
+    public function getHasDataAttribute()
+    {
+        if ($this->chart_type == 1) {
+            return $this->getHasGeneralChartData();
+        } elseif ($this->chart_type == 2) {
+            return $this->getHasPartnerChartData();
+        }
+
+        return false;
+    }
+
+    private function getHasGeneralChartData()
+    {
+        $rows = $this->rows;
+        $columns = $this->columns;
+
+        foreach ($rows as $row) {
+            foreach ($columns as $column) {
+                $rowColumnData = RowColumn::where('row_id', $row->id)
+                    ->where('column_id', $column->id)
+                    ->first();
+                if ($rowColumnData && $rowColumnData->data) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    private function getHasPartnerChartData()
+    {
+        $project = $this->project;
+        $columns = $this->columns;
+        $partners = $project->partners;
+
+        foreach ($partners as $partner) {
+            foreach ($columns as $column) {
+                $partnerColumnData = PartnerColumn::where('partner_id', $partner->id)
+                    ->where('column_chart_id', $column->id)
+                    ->first();
+                if ($partnerColumnData && $partnerColumnData->data) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Obtiene los datos del gráfico basados en el tipo de gráfico.
      * 

@@ -18,7 +18,7 @@
                     class="mb-4 rounded-lg overflow-hidden shadow-lg bg-white  relative col-span-2 md:col-span-1">
 
                     @if ($article->cover_image)
-                        <img src="{{ asset('storage/' . $article->cover_image) }}" class="w-full max-h-32 object-cover" alt="">
+                        <img src="{{ asset('uploads/' . $article->cover_image) }}" class="w-full max-h-32 object-cover" alt="">
                     @endif
                     <div class="p-2 md:p-10 relative">
                         @if ($article->creator->id == Auth::id())
@@ -80,7 +80,7 @@
     </div>
     <x-dialog-modal wire:model.live="openCreateNewNews" maxWidth="full">
         <x-slot name="title">
-            Crear nuevo Evento
+            Crear Nueva Noticia
             <button wire:click="$set('openCreateNewNews', false)"
                 class="focus:border-0 focus:outline-none border-0 border-none shadow-none rounded-lg text-gray-600 w-10 h-10 absolute right-0 top-0 bg-white hover:bg-gray-200 !font-2xl font-bold !p-0 flex items-center justify-center"
                 wire:loading.attr="disabled">
@@ -89,13 +89,13 @@
         </x-slot>
 
         <x-slot name="content">
-            <div class="sm:flex sm:items-start">
-                <div class="sm:flex-shrink-0">
+            <div class="flex sm:items-start">
+                <div class="flex-shrink-0">
                     <!-- User Avatar -->
                     <img class="w-14 h-14 rounded-full mr-2" src="{{ Auth::user()->profile_photo_url }}"
                         alt="User Avatar">
                 </div>
-                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                <div class="mt-3 mt-0 ml-4 text-left w-full">
                     <!-- User Input -->
                     <x-label class="font-semibold">{{ Auth::user()->fullName }}</x-label>
                     <!-- Combo Box -->
@@ -107,7 +107,7 @@
                             <option value="4">Socios</option>
                         @endif
                         @if ($news_type == '2')
-                            <option value="">Todos los miembros</option>
+                            <option value="">Este proyecto</option>
                             <option value="3">Gestores del proyecto</option>
                             <option value="4">Socios del proyecto</option>
                         @endif
@@ -174,7 +174,7 @@
                         @if ($image_path || $cover_image)
                             @if ($image_path != null)
                                 <!-- Cuando la imagen ya está guardada -->
-                                <img src="{{ asset('storage/' . $image_path) }}"
+                                <img src="{{ asset('uploads/' . $image_path) }}"
                                     style="max-height: 160px; width: 100%; object-fit: cover;">
                             @endif
                             @if ($cover_image != null)

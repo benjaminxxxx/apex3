@@ -7,14 +7,14 @@
             </x-message-error>
         @endif
         <form wire:submit.prevent="store">
-            <x-h3>{{ __('Create a new group') }}</x-h3>
+            <x-h3>Crear un nuevo grupo</x-h3>
             <div class="flex items-center mt-2">
                 <div>
-                    <x-input type="text" wire:model="name" placeholder="{{ __('Group Name') }}" />
+                    <x-input type="text" wire:model="name" placeholder="Nombre del Grupo" />
                     <x-input-error for="name"/>
                 </div>
                 <div class="ml-4">
-                    <x-select wire:model="manager_id" placeholder="{{ __('Asignar Gestor') }}" >
+                    <x-select wire:model="manager_id" placeholder="Asignar Gestor" >
                         <option value="">{{ __('Asignar Gestor') }}</option>
                         @foreach ($managers as $manager)
                             <option value="{{ $manager->id }}">{{ $manager->name }}</option>

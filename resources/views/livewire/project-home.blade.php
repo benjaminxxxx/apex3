@@ -35,7 +35,7 @@
                     <p class="text-gray-600 text-sm my-3">{{ Carbon::parse($project->created_at)->diffForHumans() }}</p>
                     @if(Auth::user()->hasPermission('add_projects'))
                     <x-danger-button wire:click="destroy({{$project->id}})">
-                        Eliminar grupo
+                        Eliminar Proyecto
                     </x-danger-button>
                     @endif
                 </div>

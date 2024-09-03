@@ -10,7 +10,7 @@
 
             <div class="rounded-2xl bg-white shadow-2xl overflow-hidden">
                 @php
-                    $url_cover_image = asset('storage/' . $article->cover_image);
+                    $url_cover_image = asset('uploads/' . $article->cover_image);
                 @endphp
                 <section
                     class="bg-center bg-no-repeat bg-gray-400 bg-blend-multiply lg:min-h-[370px] h-full flex items-end"

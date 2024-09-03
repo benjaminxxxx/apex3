@@ -59,7 +59,7 @@ class Project extends Model
     public function getCoverImageUrlAttribute()
     {
         if ($this->cover_image) {
-            return asset('storage/' . $this->cover_image);
+            return asset('uploads/' . $this->cover_image);
         } else {
             return 'https://picsum.photos/1070/440';
         }
@@ -67,7 +67,7 @@ class Project extends Model
     public function getProfileImageUrlAttribute()
     {
         if ($this->profile_image) {
-            return asset('storage/' . $this->profile_image);
+            return asset('uploads/' . $this->profile_image);
         } else {
             return 'https://picsum.photos/100/100';
         }

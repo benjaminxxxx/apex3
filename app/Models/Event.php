@@ -11,7 +11,7 @@ class Event extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'code','title', 'slug', 'start_date', 'end_date', 'organizer', 'phone', 'email', 'location', 'website', 'map', 'content', 'type', 'created_by','cover_image'
+        'code','title', 'slug', 'start_date', 'end_date', 'organizer', 'phone', 'email', 'location', 'website', 'map', 'content', 'type', 'created_by','cover_image','project_id'
     ];
 
     public function creator()
@@ -35,22 +35,10 @@ class Event extends Model
     public function getCoverImageUrlAttribute()
     {
         if ($this->cover_image) {
-            return asset('storage/' . $this->cover_image);
+            return asset('uploads/' . $this->cover_image);
         } else {
             return 'https://picsum.photos/500/200';
         }
     }
-    /*
-    public function getFileUrlAttribute()
-    {
-        // Verifica si el archivo existe en el almacenamiento público
-        if ($this->file_path && Storage::exists('public/' . $this->file_path)) {
-            // Genera la URL pública para el archivo
-            return Storage::url($this->file_path);
-        }
-        
-        // Devuelve una URL de un icono predeterminado si el archivo no existe
-        return asset('images/default-icon.svg');
-    }
-        */
+  
 }

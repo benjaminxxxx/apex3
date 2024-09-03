@@ -6,7 +6,10 @@
         <div class="grid grid-cols-4 gap-2 md:gap-6">
             <div class="col-span-4 lg:col-span-2">
                 <livewire:last-post/>
-                <livewire:latest-charts/>
+                <div class="mt-5">
+                    <livewire:latest-charts/>
+                </div>
+                
             </div>
             <div class="col-span-4 md:col-span-2 lg:col-span-1">
                 <livewire:latest-news :take="3" :widthImage="true" :withShowMore="false"/>

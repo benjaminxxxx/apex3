@@ -17,15 +17,16 @@ class ProjectPanel extends Component
     public $name;
     public $description;
     public $project;
-    public function mount($project_id){
+    public function mount($project_id)
+    {
         $this->project_id = $project_id;
         $this->project = Project::find($this->project_id);
-        $this->name =  $this->project->name;
-        $this->description =  $this->project->description;
+        $this->name = $this->project->name;
+        $this->description = $this->project->description;
     }
-    
-    
-    public function updatedCoverImage()
+
+
+    /*public function updatedCoverImage()
     {
         
         $this->validate([
@@ -77,13 +78,71 @@ class ProjectPanel extends Component
         $group->profile_image = $imageCoverPath;
         $group->save();
     }
+*/
+    public function updatedCoverImage()
+    {
+        $this->validate([
+            'cover_image' => 'mimes:jpg,jpeg,png|max:1024',
+        ], [
+            'cover_image.mimes' => 'La imagen debe ser de tipo jpg, jpeg, o png.',
+            'cover_image.max' => 'La imagen no debe ser mayor de 1MB.',
+        ]);
+
+        $imageName = strtolower(Str::random(20)) . '.' . $this->cover_image->getClientOriginalExtension();
+
+        $currentYear = now()->year;
+        $currentMonth = now()->month;
+
+        // Guardar la imagen en la ruta especificada usando el disco público
+        $this->cover_image->storeAs(
+            'cover/' . $currentYear . '/' . $currentMonth,
+            $imageName,
+            'public'
+        );
+
+        $imageCoverPath = 'cover/' . $currentYear . '/' . $currentMonth . '/' . $imageName;
+        $group = $this->project;
+        $group->cover_image = $imageCoverPath;
+        $group->save();
+    }
+    public function updatedProfileImage()
+    {
+        $this->validate([
+            'profile_image' => 'mimes:jpg,jpeg,png|max:1024',
+        ], [
+            'profile_image.mimes' => 'La imagen debe ser de tipo jpg, jpeg, o png.',
+            'profile_image.max' => 'La imagen no debe ser mayor de 1MB.',
+        ]);
+
+        if ($this->project->profile_image) {
+            // Eliminar la imagen antigua usando el disco público
+            Storage::disk('public')->delete($this->project->profile_image);
+        }
+
+        $imageName = strtolower(Str::random(20)) . '.' . $this->profile_image->getClientOriginalExtension();
+
+        $currentYear = now()->year;
+        $currentMonth = now()->month;
+
+        // Guardar la imagen en la ruta especificada usando el disco público
+        $this->profile_image->storeAs(
+            'profile/' . $currentYear . '/' . $currentMonth,
+            $imageName,
+            'public'
+        );
+
+        $imageProfilePath = 'profile/' . $currentYear . '/' . $currentMonth . '/' . $imageName;
+        $group = $this->project;
+        $group->profile_image = $imageProfilePath;
+        $group->save();
+    }
 
     public function updateGroupData()
     {
         $this->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-        ],[
+        ], [
             'name.required' => 'El campo es obligatorio',
             'description.required' => 'El campo es obligatorio',
         ]);

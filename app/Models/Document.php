@@ -34,7 +34,7 @@ class Document extends Model
     /**
      * Get the roles associated with the document
      */
-   
+
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'document_roles', 'document_id', 'role_id');
@@ -69,12 +69,13 @@ class Document extends Model
     public function getFileUrlAttribute()
     {
         // Verifica si el archivo existe en el almacenamiento público
-        if ($this->file_path && Storage::exists('public/' . $this->file_path)) {
+        if ($this->file_path && Storage::disk('public')->exists($this->file_path)) {
             // Genera la URL pública para el archivo
-            return Storage::url($this->file_path);
+            return Storage::disk('public')->url($this->file_path);
         }
-        
+
         // Devuelve una URL de un icono predeterminado si el archivo no existe
         return asset('images/default-icon.svg');
     }
+
 }

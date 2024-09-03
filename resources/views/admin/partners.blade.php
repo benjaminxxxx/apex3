@@ -11,5 +11,7 @@
 
     <livewire:admin-partners />
 
+    <livewire:user-general-options />
+
     <livewire:chat :popup="true"/>
 </x-app-layout>

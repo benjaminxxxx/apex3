@@ -30,23 +30,23 @@ class NewMain extends Component
     public $isEditing;
     public $newsId;
     public $offset;
+    public $project_id;
 
     public function mount()
     {
-        $this->categories = Category::where('parent_id',1)->get();
+        $this->categories = Category::where('parent_id', 1)->get();
         $this->news = collect();
         $this->offset = 0;
         $this->loadMore();
     }
     public function render()
     {
-
         return view('livewire.new-main');
     }
     public function loadMore()
     {
         $user = auth()->user();
-        $additionalNews = $user->getMyNews($this->offset,$this->news_type);
+        $additionalNews = $user->getMyNews($this->offset, $this->news_type,5,$this->project_id);
         $this->news = $this->news->merge($additionalNews);
         $this->offset += 5;
     }
@@ -56,7 +56,7 @@ class NewMain extends Component
             'title' => 'required|string',
             'selected_categories' => 'required',
             'content_noticia' => 'required',
-            'slug' => ['required','unique:posts,slug,' . $this->newsId],
+            'slug' => ['required', 'unique:posts,slug,' . $this->newsId],
         ];
 
         if ($this->cover_image) {
@@ -83,31 +83,12 @@ class NewMain extends Component
     {
         $this->slug = Str::slug($this->title);
     }
-    public function setOpenNewArticle(){
+    public function setOpenNewArticle()
+    {
         $this->resetFields();
         $this->openCreateNewNews = true;
     }
     
-    /*
-        if(Auth::user()->role_id==1 || Auth::user()->role_id==2){
-            $this->news = Post::take(5);
-        }else{
-            // Obtener IDs de eventos basados en roles
-            $newsIdsByRole = PostVisibilityLevel::where('visibility_level', $roleId)
-            ->pluck('post_id');
-
-            // Obtener eventos creados por el usuario
-            $newsIdsByCreator = Post::where('created_by', $userId)
-            ->pluck('id');
-
-            // Combinar ambos conjuntos de eventos
-            $newsIds = $newsIdsByRole->merge($newsIdsByCreator)->unique();
-
-            // Obtener eventos basados en los IDs combinados
-            $this->news = Post::whereIn('id', $newsIds)
-            ->where('type', $this->news_type)
-            ->get();
-        }*/
     public function store()
     {
         $this->validate();
@@ -117,7 +98,7 @@ class NewMain extends Component
             $coverImagePath = null;
             if ($this->cover_image)
                 $coverImagePath = $this->storeCoverImage($this->cover_image);
-            
+
             $newData = [
                 'title' => $this->title,
                 'content' => $this->content_noticia,
@@ -125,34 +106,42 @@ class NewMain extends Component
                 'cover_image' => $coverImagePath,
                 'type' => $this->news_type,
             ];
-            
+
+            if($this->project_id){
+                $newData['project_id'] = $this->project_id;
+            }
+           
             if ($this->isEditing) {
-                
+
                 $new = Post::findOrFail($this->newsId);
-                if ($coverImagePath!=null && $coverImagePath != $new->cover_image) {
-                   
-                    Storage::delete('public/' . $new->cover_image);
+                if ($coverImagePath != null && $coverImagePath != $new->cover_image) {
+
+                    if (Storage::disk('public')->exists($new->cover_image)) {
+                        Storage::disk('public')->delete($new->cover_image);
+                    }
                 }
-                if ($coverImagePath==null && $this->image_path==null && $new->cover_image!=null) {
-                   
-                    Storage::delete('public/' . $new->cover_image);
+                if ($coverImagePath == null && $this->image_path == null && $new->cover_image != null) {
+
+                    if (Storage::disk('public')->exists($new->cover_image)) {
+                        Storage::disk('public')->delete($new->cover_image);
+                    }
                 }
-                if($coverImagePath==null){
+                if ($coverImagePath == null) {
                     $newData['cover_image'] = $this->image_path;
                 }
 
-                $new->update($newData);    
+                $new->update($newData);
                 $new->categories()->sync($this->selected_categories);
 
-                $roles=[];
+                $roles = [];
 
                 if (empty($this->visibility)) {
                     $roles = [3, 4]; // Administradores, Gestores, Socios
                 } else {
                     $roles = [$this->visibility];
                 }
-                PostVisibilityLevel::where('post_id',$new->id)->delete();
-                if($roles){
+                PostVisibilityLevel::where('post_id', $new->id)->delete();
+                if ($roles) {
                     foreach ($roles as $role) {
                         PostVisibilityLevel::create([
                             'post_id' => $new->id,
@@ -168,14 +157,14 @@ class NewMain extends Component
                 $newData['code'] = Str::random(15);
                 $new = Post::create($newData);
                 $new->categories()->sync($this->selected_categories);
-                
+
                 if (empty($this->visibility)) {
                     $roles = [3, 4]; // Administradores, Gestores, Socios
                 } else {
                     $roles = [$this->visibility];
                 }
-                PostVisibilityLevel::where('post_id',$new->id)->delete();
-                if($roles){
+                PostVisibilityLevel::where('post_id', $new->id)->delete();
+                if ($roles) {
                     foreach ($roles as $role) {
                         PostVisibilityLevel::create([
                             'post_id' => $new->id,
@@ -200,20 +189,21 @@ class NewMain extends Component
         }
     }
 
-    public function edit($newCode){
+    public function edit($newCode)
+    {
         $user = auth()->user();
         $new = Post::where('code', $newCode)->first();
-        
+
         if (!$new) {
             session()->flash('error', 'la noticia no existe.');
             return;
         }
-        
+
         if ($new->created_by !== $user->id) {
             session()->flash('error', 'No tienes permiso para eliminar esta noticia.');
             return;
         }
-        
+
         $this->isEditing = true;
         $this->newsId = $new->id;
         $this->title = $new->title;
@@ -221,10 +211,10 @@ class NewMain extends Component
         $this->slug = $new->slug;
         $this->image_path = $new->cover_image;
         $this->openCreateNewNews = true;
-        
-        $this->selected_categories = $new->categories->pluck('id')->toArray(); 
+
+        $this->selected_categories = $new->categories->pluck('id')->toArray();
         $roles = PostVisibilityLevel::where('post_id', $new->id)->pluck('visibility_level')->toArray();
-    
+
         if (count($roles) > 1) {
             $this->visibility = null;
         } else {
@@ -232,9 +222,9 @@ class NewMain extends Component
         }
 
         $this->dispatch('tinymce-update', $this->content_noticia);
-       
+
     }
-  
+
     public function deleteImage()
     {
         $this->cover_image = null;
@@ -253,20 +243,26 @@ class NewMain extends Component
         $fullFilename = "{$randomName}.{$extension}";
         $counter = 1;
 
-        while (Storage::exists("public/{$directory}/{$fullFilename}")) {
+        while (Storage::disk('public')->exists("{$directory}/{$fullFilename}")) {
             $fullFilename = "{$randomName}-{$counter}.{$extension}";
             $counter++;
         }
 
-        $storedPath = $image->storeAs("public/{$directory}", $fullFilename);
+        // Mover la imagen al directorio público
+        $storedPath = $image->storeAs($directory, $fullFilename, 'public');
 
-        return str_replace('public/', '', $storedPath);
+        return $storedPath;
     }
+
+   
     public function delete($newCode)
     {
         $article = Post::where('code', $newCode)->first();
 
         if ($article) {
+            if ($article->cover_image && Storage::disk('public')->exists($article->cover_image)) {
+                Storage::disk('public')->delete($article->cover_image);
+            }
             $article->delete();
             $this->news = $this->news->reject(function ($item) use ($newCode) {
                 return $item['code'] === $newCode;

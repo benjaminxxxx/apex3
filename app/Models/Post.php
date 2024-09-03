@@ -16,6 +16,7 @@ class Post extends Model
         'content', 
         'slug', 
         'cover_image',
+        'project_id',
         'excerpt',
         'status',
         'type'
@@ -33,7 +34,7 @@ class Post extends Model
     public function getCoverImageUrlAttribute()
     {
         if ($this->cover_image) {
-            return asset('storage/' . $this->cover_image);
+            return asset('uploads/' . $this->cover_image);
         } else {
             return 'https://picsum.photos/500/200';
         }

@@ -2,9 +2,9 @@
     <div class="">
         <div class="flex items-center justify-between">
 
-            <div class="flex items-center justify-between rtl:justify-end top-aside h-20">
+            <div class="flex items-center justify-between rtl:justify-end top-aside h-20" style="z-index:60">
 
-                <a href="https://flowbite.com" class="flex ms-2 md:me-24 link-logo p-2 md:p-3">
+                <a href="/" class="flex ms-2 md:me-24 link-logo p-2 md:p-3 bg-white">
                     <img src="{{ asset('/images/logo.png') }}" alt="logo" />
                 </a>
                 <div class="bars-container md:w-[110px] text-center">
@@ -21,7 +21,7 @@
                 </div>
 
             </div>
-            <div class="flex items-center p-2 md:p-3">
+            <div class="flex items-center p-2 md:p-3 absolute right-0">
                 <div class="flex items-center ms-3">
                     <div class="text-right">
                         <p class="text-md font-medium">{{ Auth::user()->name }}</p>

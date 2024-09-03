@@ -24,7 +24,7 @@
 
             <x-hr />
             @php
-                $url_cover_image = asset('storage/' . $event->cover_image);
+                $url_cover_image = asset('uploads/' . $event->cover_image);
             @endphp
             <article>
                 <div class="clearfix">

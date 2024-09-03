@@ -46,6 +46,7 @@ class ChartGroup extends Component
     public $showlabels = true;
     public $chartToPublish;
     public $chart_description;
+    public $projectCountPartners = 0;
     public function mount()
     {
         $this->projects = Project::all();
@@ -53,6 +54,13 @@ class ChartGroup extends Component
     public function render()
     {
         $this->charts = Chart::all();
+        if ($this->selectedProject) {
+            $project = Project::find($this->selectedProject);
+            $partners = $project->partners;
+            $this->projectCountPartners = $partners->count();
+        } else {
+            $this->projectCountPartners = 0;
+        }
         return view('livewire.chart-group');
     }
 
@@ -78,7 +86,7 @@ class ChartGroup extends Component
                     $rows = $this->selectedChart->rows;
                     $rowHeader = $rows->pluck('name')->toArray();
                 } else {
-                    
+
                     $rows = $partners;
                     $rowHeader = $rows->pluck('name')->toArray();
                 }
@@ -90,7 +98,7 @@ class ChartGroup extends Component
                     }
                     $data[] = $rowData;
                 }
-                
+
                 $this->dispatch("loadChart", columnsHeader: $columnsHeader, rowHeader: $rowHeader, data: $data);
 
             }
@@ -156,25 +164,33 @@ class ChartGroup extends Component
             $this->charts = $this->theGroup->charts;
         }
     }
-    public function publishChart(){
-        
-        $data = $this->selectedChart->data;
-        $code = Str::random(10);
-        $user_id = Auth::id();
+    public function publishChart()
+    {
 
-        Chartpublish::create([
-            'code' => $code,
-            'data' => json_encode($data), // Asegurarse de codificar los datos como JSON
-            'chart_type' => $this->selectedChart->chart_type,
-            'type' =>  $this->chartType,
-            'title' => $this->chart_title,
-            'description'=>$this->chart_description,
-            'showlabels' => $this->showlabels ? '1' : '0',
-            'showlegend' => $this->showlegend ? '1' : '0',
-            'chart_id' => $this->selectedChart->id,
-            'user_id' => $user_id,
-            'project_id' => $this->selectedChart->project_id,
-        ]);
+
+        try {
+            $data = $this->selectedChart->data;
+            $code = Str::random(10);
+            $user_id = Auth::id();
+
+            Chartpublish::create([
+                'code' => $code,
+                'data' => json_encode($data), // Asegurarse de codificar los datos como JSON
+                'chart_type' => $this->selectedChart->chart_type,
+                'type' => $this->chartType,
+                'title' => $this->chart_title,
+                'description' => $this->chart_description,
+                'showlabels' => $this->showlabels ? '1' : '0',
+                'showlegend' => $this->showlegend ? '1' : '0',
+                'chart_id' => $this->selectedChart->id,
+                'user_id' => $user_id,
+                'project_id' => $this->selectedChart->project_id,
+            ]);
+            $this->dispatch("hideChartView");
+            session()->flash('message', '¡Gráfico publicado correctamente!');
+        } catch (QueryException $e) {
+            session()->flash('error', 'Error al publicar el gráfico: ' . $e->getMessage());
+        }
     }
     public function selectChart()
     {
@@ -372,7 +388,8 @@ class ChartGroup extends Component
     {
         $this->data[$partnerId][$columnId] = $value;
     }
-    public function updateAndClose(){
+    public function updateAndClose()
+    {
         $this->updateInformation();
         $this->isFormData = false;
     }

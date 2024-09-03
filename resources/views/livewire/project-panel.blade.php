@@ -22,7 +22,7 @@
             @enderror
             <div class="flex items-center mb-4 p-2 lg:p-10">
                 
-                <div class="-mt-16 w-32 h-32 overflow-hidden z-50 relative">
+                <div class="-mt-16 w-32 h-32 overflow-hidden relative">
                     @if(Auth::user()->hasPermission('add_projects'))
                     <div wire:loading wire:target="profile_image" class="absolute text-xs left-0 top-0 ml-1 mt-1 text-white">Cargando...</div>
                     <x-icon-edit class="bottom-0 right-0 mr-2 mb-2" @click="$refs.fileInput_profile.click()" />
@@ -38,41 +38,45 @@
             </div>
             <!-- Barra de navegación -->
             <div class="bg-gray-100 p-2 lg:px-10 py-4">
-                <ul class="flex space-x-4">
-                    <li>
-                        <a href="#" @click.prevent="activeTab = 'inicio'"
-                           class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
-                           :class="{ 'text-orange-600': activeTab === 'inicio' }">Inicio</a>
-                    </li>
-                    <li>
-                        <a href="#" @click.prevent="activeTab = 'documentos'"
-                           class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
-                           :class="{ 'text-orange-600': activeTab === 'documentos' }">Documentos</a>
-                    </li>
-                    <li>
-                        <a href="#" @click.prevent="activeTab = 'grupos'"
-                           class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
-                           :class="{ 'text-orange-600': activeTab === 'grupos' }">Grupos</a>
-                    </li>
-                    <li>
-                        <a href="#" @click.prevent="activeTab = 'eventos'"
-                           class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
-                           :class="{ 'text-orange-600': activeTab === 'eventos' }">Eventos</a>
-                    </li>
-                    <li>
-                        <a href="#" @click.prevent="activeTab = 'noticias'"
-                           class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
-                           :class="{ 'text-orange-600': activeTab === 'noticias' }">Noticias</a>
-                    </li>
-                    @if(Auth::user()->hasPermission('add_projects'))
-                    <li>
-                        <a href="#" @click.prevent="activeTab = 'configuracion'"
-                           class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
-                           :class="{ 'text-orange-600': activeTab === 'configuracion' }">Configuración</a>
-                    </li>
-                    @endif
-                </ul>
+                <div class="overflow-x-auto snap-x snap-mandatory">
+                    <ul class="flex space-x-4">
+                        <li class="snap-start">
+                            <a href="#" @click.prevent="activeTab = 'inicio'"
+                               class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
+                               :class="{ 'text-orange-600': activeTab === 'inicio' }">Inicio</a>
+                        </li>
+                        <li class="snap-start">
+                            <a href="#" @click.prevent="activeTab = 'documentos'"
+                               class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
+                               :class="{ 'text-orange-600': activeTab === 'documentos' }">Documentos</a>
+                        </li>
+                        <li class="snap-start">
+                            <a href="#" @click.prevent="activeTab = 'grupos'"
+                               class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
+                               :class="{ 'text-orange-600': activeTab === 'grupos' }">Grupos</a>
+                        </li>
+                        <li class="snap-start">
+                            <a href="#" @click.prevent="activeTab = 'eventos'"
+                               class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
+                               :class="{ 'text-orange-600': activeTab === 'eventos' }">Eventos</a>
+                        </li>
+                        <li class="snap-start">
+                            <a href="#" @click.prevent="activeTab = 'noticias'"
+                               class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
+                               :class="{ 'text-orange-600': activeTab === 'noticias' }">Noticias</a>
+                        </li>
+                        @if(Auth::user()->hasPermission('add_projects'))
+                        <li class="snap-start">
+                            <a href="#" @click.prevent="activeTab = 'configuracion'"
+                               class="text-gray-800 hover:text-orange-600 text-xs cursor-pointer"
+                               :class="{ 'text-orange-600': activeTab === 'configuracion' }">Configuración</a>
+                        </li>
+                        @endif
+                    </ul>
+                </div>
             </div>
+            
+            
         </div>
     </x-pop>
     <div x-show="activeTab === 'inicio'" class="mt-4" id="panel_inicio">
@@ -85,10 +89,10 @@
         <livewire:groups :project_id="$project->id"/>
     </div>
     <div x-show="activeTab === 'eventos'" class="mt-4" id="panel_eventos">
-        <livewire:event-main :event_type="2"/>
+        <livewire:event-main :event_type="2" :project_id="$project->id"/>
     </div>
     <div x-show="activeTab === 'noticias'" class="mt-4" id="panel_noticias">
-        <livewire:new-main :news_type="2"/>
+        <livewire:new-main :news_type="2" :project_id="$project->id"/>
     </div>
     
     <div x-show="activeTab === 'configuracion'" class="mt-4" id="panel_configuracion">

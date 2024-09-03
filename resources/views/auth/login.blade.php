@@ -16,20 +16,23 @@
                 {{ $value }}
             </div>
         @endsession
-
+        
         <form method="POST" action="{{ route('login') }}">
             @csrf
-            <h1 class="text-xl font-bold leading-tight text-center tracking-tight md:text-4xl dark:mb-2 md:mb-5">
+            <x-h1 class="text-white md:text-gray-600">
                 Bienvenido!
-            </h1>
+            </x-h1>
+            <div class="flex justify-center md:hidden my-10 text-center w-full">
+                <x-application-logo class="w-36" fill="white"/>
+            </div>
             <div>
-                <x-label for="email" value="Email"  />
+                <x-label for="email" value="Email" class="text-white md:text-gray-600" />
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required
                     autofocus autocomplete="username" />
             </div>
 
             <div class="mt-4">
-                <x-label for="password" value="Contraseña" />
+                <x-label for="password" value="Contraseña" class="text-white md:text-gray-600" />
                 <x-input id="password" class="block mt-1 w-full" type="password" name="password" required
                     autocomplete="current-password" />
             </div>
@@ -37,13 +40,13 @@
             <div class="block mt-4">
                 <label for="remember_me" class="flex items-center">
                     <x-checkbox id="remember_me" name="remember" />
-                    <span class="ms-2 text-sm">Recuerdame</span>
+                    <span class="ms-2 text-sm text-white md:text-gray-600">Recuerdame</span>
                 </label>
             </div>
 
             <div class="flex items-center justify-end mt-4">
                 @if (Route::has('password.request'))
-                    <a class="underline text-sm hover:text-cyan-800 text-cyan-700 rounded-md focus:outline-none  focus:ring-cyan-700"
+                    <a class="underline text-sm hover:text-cyan-800 text-white md:text-cyan-700 rounded-md focus:outline-none  focus:ring-cyan-700"
                         href="{{ route('password.request') }}">
                         ¿Has olvidado la contraseña?
                     </a>

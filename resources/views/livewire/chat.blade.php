@@ -1,6 +1,6 @@
 <div>
     @if ($popup)
-        <div class="fixed bottom-0 right-0">
+        <div class="fixed bottom-0 right-0 z-50">
             <a href="{{ route('contact') }}"
                 class="bg-cyan-600 p-5 rounded-full items-center shadow-2xl border border-cyan-700 hover:bg-cyan-700 text-white justify-center flex w-16 h-16 text-2xl mr-2 mb-2">
                 <i class="icon icon-comment-2"></i>

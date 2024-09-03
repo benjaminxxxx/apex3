@@ -1,7 +1,7 @@
 <div>
     <x-card>
         <div class="mb-2 md:mb-4">
-            <x-button wire:click="openForm()">Agregar Nuevo Gestor</x-button>
+            <x-button wire:click="openForm()">Agregar Nuevo Miembro</x-button>
         </div>
         <x-table>
             <x-slot name="thead">
@@ -24,21 +24,27 @@
                             <x-th value="{{ $user->role_id }}" />
                             <x-th value="0" />
                             <td>
-                                <x-secondary-button wire:click="edit({{ $user->id }})">
-                                    <i class="icon-pencil"></i>
-                                </x-secondary-button>
-                                @if ($user->status == '0')
-                                    <x-warning-button wire:click="enable({{ $user->id }})" class="ml-1">
-                                        <i class="icon-block"></i>
-                                    </x-warning-button>
-                                @else
-                                    <x-success-button wire:click="disable({{ $user->id }})" class="ml-1">
-                                        <i class="icon-check"></i>
-                                    </x-success-button>
-                                @endif
-                                <x-danger-button wire:click="confirmDelete({{ $user->id }})" class="ml-1">
-                                    <i class="icon-trash"></i>
-                                </x-danger-button>
+                                <div class="flex gap-3">
+                                    <x-secondary-button wire:click="edit({{ $user->id }})">
+                                        <i class="icon-pencil"></i>
+                                    </x-secondary-button>
+                                    @if (Auth::id() != $user->id)
+                                        @if ($user->status == '0')
+                                            <x-warning-button @click="$dispatch('askEnableUser', { userId: {{ $user->id }} })"
+                                                class="ml-1">
+                                                <i class="icon-block"></i>
+                                            </x-warning-button>
+                                        @else
+                                            <x-success-button @click="$dispatch('askDisableUser', { userId: {{ $user->id }} })"
+                                                class="ml-1">
+                                                <i class="icon-check"></i>
+                                            </x-success-button>
+                                        @endif
+                                        <x-danger-button  @click="$dispatch('askDeleteUser', { userId: {{ $user->id }} })" class="ml-1">
+                                            <i class="icon-trash"></i>
+                                        </x-danger-button>
+                                    @endif
+                                </div>
                             </td>
                         </x-tr>
                     @endforeach
@@ -46,27 +52,11 @@
             </x-slot>
         </x-table>
     </x-card>
-    <!-- Componente del modal de confirmación -->
-    <x-confirmation-modal id="confirmDeleteModal" wire:model="isDeleting">
-        <x-slot name="title">
-            Confirmar Eliminación
-        </x-slot>
-        <x-slot name="content">
-            ¿Estás seguro que deseas eliminar este usuario?
-        </x-slot>
-        <x-slot name="footer">
-            <x-secondary-button wire:click="cancelDelete">
-                Cancelar
-            </x-secondary-button>
-            <x-danger-button wire:click="deleteUser" class="ml-2">
-                Eliminar
-            </x-danger-button>
-        </x-slot>
-    </x-confirmation-modal>
+  
     <!-- Modal -->
     <x-dialog-modal wire:model="isFormOpen">
         <x-slot name="title">
-            Agregar Nuevo Asociado
+            Agregar Nuevo Miembro
         </x-slot>
 
         <x-slot name="content">
@@ -102,7 +92,7 @@
                         class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
 
                         @foreach ($roles as $role)
-                            <option value="{{ $role->id }}">{{ mb_strtoupper($role->role_name) }}</option>
+                            <option value="{{ $role->id }}">{{ mb_strtoupper($role->name) }}</option>
                         @endforeach
                     </x-select>
                     <x-input-error for="role_id" />
@@ -147,4 +137,5 @@
             </div>
         </div>
     @endif
+    
 </div>

@@ -188,20 +188,27 @@ class User extends Authenticatable
         }
     }
 
-    public function getMyNews($offset = 0, $type = 1, $take = 5)
+    public function getMyNews($offset = 0, $type = 1, $take = 5, $project_id = null)
     {
         $userRoleId = $this->role_id;
 
+        // Construye la consulta base
         $query = Post::where('type', $type)
             ->with('categories')
             ->latest()
             ->skip($offset)
             ->take($take);
 
+        // Filtra por role_id si no es 1 o 2
         if ($userRoleId != 1 && $userRoleId != 2) {
             $query->whereHas('visibilityLevels', function ($query) use ($userRoleId) {
                 $query->where('visibility_level', $userRoleId);
             });
+        }
+
+        // Filtra por project_id si no es null
+        if (!is_null($project_id)) {
+            $query->where('project_id', $project_id);
         }
 
         return $query->get();
@@ -236,7 +243,7 @@ class User extends Authenticatable
     public function hasPermissionToManage($projectId)
     {
         // Verificar si el usuario es administrador del proyecto
-        $isAdmin = $this->role_id == 2;
+        $isAdmin = $this->role_id == 1 || $this->role_id == 2;
 
         // Verificar si el usuario es manager asignado al proyecto
         $isManager = $this->role_id == 3 && $this->managedProjects()->where('projects.id', $projectId)->exists();

@@ -30,9 +30,10 @@ class DocumentMain extends Component
 
     public function mount()
     {
-        
+
     }
-    public function checkVisibility(){
+    public function checkVisibility()
+    {
         $this->user_to = null;
         $this->user_to_name = null;
         $this->user_to_search = '';
@@ -41,15 +42,14 @@ class DocumentMain extends Component
     public function search()
     {
         if ($this->user_to_search) {
-            if (Auth::user()->role_id==1 || Auth::user()->role_id==2  ) {
+            if (Auth::user()->role_id == 1 || Auth::user()->role_id == 2) {
                 $this->users = User::where(function ($query) {
                     $query->where('name', 'like', '%' . $this->user_to_search . '%')
                         ->orWhere('email', 'like', '%' . $this->user_to_search . '%');
                 })
                     ->where('status', 1)
                     ->get();
-            }else
-            {
+            } else {
                 $this->users = User::where(function ($query) {
                     $query->where('name', 'like', '%' . $this->user_to_search . '%')
                         ->orWhere('email', 'like', '%' . $this->user_to_search . '%');
@@ -59,12 +59,12 @@ class DocumentMain extends Component
                     ->where('created_by', auth()->id())
                     ->get();
             }
-            
+
         } else {
             $this->users = null;
         }
     }
-    public function addMember($userId,$name)
+    public function addMember($userId, $name)
     {
         $this->user_to = $userId;
         $this->user_to_name = $name;
@@ -99,7 +99,7 @@ class DocumentMain extends Component
             'document_upload' => 'required|mimes:pdf,doc,docx,xls,xlsx|max:10240', // Máx 10MB
         ];
 
-        if($this->visibility==5){
+        if ($this->visibility == 5) {
             $validationData['user_to'] = 'required';
         }
         $this->validate($validationData);
@@ -116,28 +116,28 @@ class DocumentMain extends Component
                 'type' => $this->document_type,
             ];
 
-            if($this->document_type==2){
+            if ($this->document_type == 2) {
                 $documentData['project_id'] = $this->document_project;
             }
-            if($this->document_type==3){
+            if ($this->document_type == 3) {
                 $documentData['group_id'] = $this->document_group;
             }
-            if($this->visibility==5){
+            if ($this->visibility == 5) {
                 $documentData['user_to'] = $this->user_to;
             }
 
             $document = Document::create($documentData);
 
-            $roles=[];
+            $roles = [];
 
             if (empty($this->visibility)) {
                 $roles = [1, 2, 3, 4]; // Administradores, Gestores, Socios
             } else {
-                if($this->visibility!=5){
+                if ($this->visibility != 5) {
                     $roles = [$this->visibility];
                 }
             }
-            if($roles){
+            if ($roles) {
                 foreach ($roles as $role) {
                     DocumentRole::create([
                         'document_id' => $document->id,
@@ -145,7 +145,7 @@ class DocumentMain extends Component
                     ]);
                 }
             }
-            
+
 
             session()->flash('message', 'Documento creado exitosamente.');
             $this->reset(['description', 'document_upload', 'visibility']);
@@ -161,6 +161,33 @@ class DocumentMain extends Component
     {
         $this->document_upload = null;
     }
+    protected function storeFile($image)
+    {
+        $currentYear = now()->year;
+        $currentMonth = now()->month;
+
+        // Construir el directorio basado en el año y el mes
+        $directory = "{$currentYear}/{$currentMonth}";
+
+        // Usar el disco 'public' configurado para almacenamiento
+        $randomName = Str::random(20);
+        $extension = $image->getClientOriginalExtension();
+        $fullFilename = "{$randomName}.{$extension}";
+        $counter = 1;
+
+        // Evitar colisiones de nombres de archivo
+        while (Storage::disk('public')->exists("{$directory}/{$fullFilename}")) {
+            $fullFilename = "{$randomName}-{$counter}.{$extension}";
+            $counter++;
+        }
+
+        // Guardar el archivo en el disco 'public'
+        $storedPath = $image->storeAs($directory, $fullFilename, 'public');
+
+        // Devolver la ruta relativa para usar con asset()
+        return $storedPath;
+    }
+    /*
     protected function storeFile($image)
     {
         $currentYear = now()->year;
@@ -182,7 +209,34 @@ class DocumentMain extends Component
         $storedPath = $image->storeAs("public/{$directory}", $fullFilename);
 
         return str_replace('public/', '', $storedPath);
-    }
+    }*//*
+    protected function storeFile($image)
+    {
+        $currentYear = now()->year;
+        $currentMonth = now()->month;
+
+        $directory = "uploads/{$currentYear}/{$currentMonth}";
+
+        $randomName = Str::random(20);
+        $extension = $image->getClientOriginalExtension();
+
+        $fullFilename = "{$randomName}.{$extension}";
+        $counter = 1;
+
+        $publicPath = public_path($directory); // Obtener la ruta pública
+        $fullFilePath = $publicPath . '/' . $fullFilename;
+
+        while (file_exists($fullFilePath)) {
+            $fullFilename = "{$randomName}-{$counter}.{$extension}";
+            $fullFilePath = $publicPath . '/' . $fullFilename;
+            $counter++;
+        }
+
+        $image->move($publicPath, $fullFilename); // Mover el archivo directamente
+
+        return "{$directory}/{$fullFilename}"; // Devolver la ruta relativa
+    }*/
+
     public function delete($documentCode)
     {
         $user = auth()->user();
@@ -198,6 +252,10 @@ class DocumentMain extends Component
         // Verificar si el documento fue creado por el usuario autenticado
         if ($document->created_by !== $user->id) {
             session()->flash('error', 'No tienes permiso para eliminar este documento.');
+        }
+
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            Storage::disk('public')->delete($document->file_path);
         }
 
         // Eliminar el documento

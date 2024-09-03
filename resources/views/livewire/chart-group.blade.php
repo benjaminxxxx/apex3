@@ -1,6 +1,6 @@
 <div>
     <div class="lg:flex gap-5 mt-3">
-        <x-card class="flex-1">
+        <x-card class="flex-1 lg:w-2/3">
             <x-table>
                 <x-slot name="thead">
                     <tr>
@@ -23,19 +23,23 @@
                                 <x-th value="{{ $chartdata->showlegend == '0' ? 'No' : 'Si' }}" />
                                 <td>
 
-                                    <x-secondary-button wire:click="edit('{{ $chartdata->chart_id }}')">
-                                        <i class="icon-pencil"></i>
-                                    </x-secondary-button>
-                                    <x-secondary-button wire:click="showdata('{{ $chartdata->chart_id }}')">
-                                        <i class="icon-doc"></i>
-                                    </x-secondary-button>
-                                    <x-button wire:click="showchart('{{ $chartdata->chart_id }}')">
-                                        <i class="icon-eye"></i>
-                                    </x-button>
-                                    <x-danger-button wire:confirm="Seguro que desea eliminar este gráfico??"
-                                        wire:click="delete('{{ $chartdata->chart_id }}')" class="ml-1">
-                                        <i class="icon-trash"></i>
-                                    </x-danger-button>
+                                    <div class="flex gap-3">
+                                        <x-secondary-button wire:click="edit('{{ $chartdata->chart_id }}')">
+                                            <i class="icon-pencil"></i>
+                                        </x-secondary-button>
+                                        <x-secondary-button wire:click="showdata('{{ $chartdata->chart_id }}')">
+                                            <i class="icon-doc"></i>
+                                        </x-secondary-button>
+                                        @if($chartdata->hasData)
+                                        <x-button wire:click="showchart('{{ $chartdata->chart_id }}')">
+                                            <i class="icon-eye"></i>
+                                        </x-button>
+                                        @endif
+                                        <x-danger-button wire:confirm="Seguro que desea eliminar este gráfico??"
+                                            wire:click="delete('{{ $chartdata->chart_id }}')">
+                                            <i class="icon-trash"></i>
+                                        </x-danger-button>
+                                    </div>
 
                                 </td>
                             </x-tr>
@@ -44,7 +48,7 @@
                 </x-slot>
             </x-table>
         </x-card>
-        <x-card class="lg:w-96">
+        <x-card class="lg:w-1/3 2xl:w-96">
             <x-h3>Crear un nuevo gráfico</x-h3>
             <form wire:submit="addChart">
 
@@ -55,7 +59,7 @@
                 </div>
                 <div class="mt-4">
                     <x-label>Proyecto</x-label>
-                    <x-select wire:model="selectedProject">
+                    <x-select wire:model.live="selectedProject">
                         <option value="">Seleccionar el proyecto</option>
                         @foreach ($projects as $project)
                             <option value="{{ $project->id }}">{{ $project->name }}</option>
@@ -68,7 +72,9 @@
                     <x-select wire:model="selectedChartType" wire:change="updateChartType">
                         <option value="">Seleccionar</option>
                         <option value="1">Progreso del proyecto</option>
+                        @if($selectedProject && $projectCountPartners!=0)
                         <option value="2">Progreso de cada socio dentro de un proyecto</option>
+                        @endif
                     </x-select>
                     <x-input-error for="selectedChartType" />
                 </div>
@@ -249,8 +255,8 @@
                         <option value="bar">Barras</option>
                         <option value="line">Líneas</option>
                         <option value="radar">Radar</option>
-                        <option value="pie">Torta</option>
-                        <option value="doughnut">Dona</option>
+                        <option value="pie">Circular</option>
+                        <option value="doughnut">Donut</option>
                         <option value="polarArea">Polar</option>
                     </x-select>
                 </div>
@@ -396,7 +402,13 @@
 
             updateChart(columnsHeader, rowHeader, dataAll);
         });
-
+        Livewire.on('hideChartView', () => {
+            const card = document.querySelector('.panel-grafico');
+            if (card) {
+                card.classList.add('hidden');
+            }
+        });
+        
         // Initialize the chart with default settings
         updateChartConfig();
     });

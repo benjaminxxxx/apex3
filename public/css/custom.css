@@ -6,6 +6,15 @@
     display: table;
     clear: both;
 }
+.overflow-x-auto {
+    overflow-x: auto;
+}
+.snap-x {
+    scroll-snap-type: x mandatory;
+}
+.snap-start {
+    scroll-snap-align: start;
+}
 /*
 .grid__item,
         .grid__col-sizer {
@@ -23,6 +32,7 @@
 
 .is-active-menu .top-aside {
     width: 300px;
+    background-color: white;;
 }
 .menu-width,
 .top-aside {

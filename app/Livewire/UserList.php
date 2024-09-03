@@ -2,17 +2,21 @@
 
 namespace App\Livewire;
 
+use App\Models\Friendship;
+use Illuminate\Database\QueryException;
 use Livewire\Component;
 
 use App\Models\Group;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
+
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Auth;
 
 class UserList extends Component
 {
+    use LivewireAlert;
     public $userId;
     public $nickname;
     public $name;
@@ -29,6 +33,7 @@ class UserList extends Component
     public $isDeleting = false;
     public $projectId;
     public $projects;
+    protected $listeners = ['userModified'=>'$refresh'];
     protected function rules()
     {
         return [
@@ -137,48 +142,8 @@ class UserList extends Component
         }
         $this->closeForm();
     }
-    public function enable($userId)
-    {
-        $user = User::findOrFail($userId);
-        $user->status = '1';
-        $user->save();
-    }
-
-    public function disable($userId)
-    {
-        $user = User::findOrFail($userId);
-        $user->status = '0';
-        $user->save();
-
-        if (config('session.driver') === 'database') {
-
-            DB::connection(config('session.connection'))
-                ->table(config('session.table', 'sessions'))
-                ->where('user_id', $userId) // Filtrar por el ID del usuario bloqueado
-                ->delete();
-        }
-    }
-    /*
-    public function confirmDelete($userId)
-    {
-        $this->userIdToDelete = $userId;
-        $this->isDeleting = true;
-
-    }
-    public function deleteUser()
-    {
-        if ($this->userIdToDelete) {
-            User::findOrFail($this->userIdToDelete)->delete();
-            session()->flash('message', 'Usuario eliminado correctamente.');
-        }
-        $this->userIdToDelete = null;
-        $this->isDeleting = false;
-    }
-    public function cancelDelete()
-    {
-        $this->userIdToDelete = null;
-        $this->isDeleting = false;
-    }*/
+    
+   
     public function openForm()
     {
         $this->resetForm();

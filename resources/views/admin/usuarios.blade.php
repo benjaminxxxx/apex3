@@ -1,7 +1,9 @@
 <x-app-layout>
     <x-slot name="title">
 
-        @if (Auth::user()->role_id == '2')
+        @if (Auth::user()->role_id == '1')
+            Administración de Usuarios
+        @elseif (Auth::user()->role_id == '2')
             Administración de Gestores
         @elseif (Auth::user()->role_id == '3')
             Administración de Asociados
@@ -12,7 +14,9 @@
 
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            @if (Auth::user()->role_id == '2')
+            @if (Auth::user()->role_id == '1')
+                Administración de Usuarios
+            @elseif (Auth::user()->role_id == '2')
                 Administración de Gestores
             @elseif (Auth::user()->role_id == '3')
                 Administración de Asociados

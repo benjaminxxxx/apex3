@@ -16,34 +16,35 @@ use Auth;
 class EventMain extends Component
 {
     use WithFileUploads;
-    public $event_type;
-    public $event_project;
-    public $event_upload;
-    public $openCreateNewEvent = false;
+    public $categories;
+    public $content;
+    public $cover_image;
     public $description;
-    public $visibility;
-    public $events;
-    public $title;
-    public $slug;
-    public $start_date;
+    public $email;
     public $end_date;
+    public $eventId;
+    public $event_project;
+    public $events;
+    public $event_type;
+    public $event_upload;
+    public $image_path;
+    public $isEditing;
+    public $location;
+    public $map;
+    public $openCreateNewEvent = false;
     public $organizer;
     public $phone;
-    public $email;
-    public $location;
-    public $website;
-    public $map;
-    public $content;
-    public $image_path;
-    public $cover_image;
-    public $categories;
+    public $project_id;
     public $selected_categories = [];
-    public $isEditing;
-    public $eventId;
+    public $slug;
+    public $start_date;
+    public $title;
+    public $visibility;
+    public $website;
 
     public function mount()
     {
-        $this->categories = Category::where('parent_id',5)->get();
+        $this->categories = Category::where('parent_id', 5)->get();
     }
 
     protected function rules()
@@ -52,10 +53,10 @@ class EventMain extends Component
             'title' => 'required|string',
             'selected_categories' => 'required',
             'content' => 'required',
-            'organizer'=> 'required',
-            'slug' => ['required','unique:events,slug,' . $this->eventId],
+            'organizer' => 'required',
+            'slug' => ['required', 'unique:events,slug,' . $this->eventId],
             'start_date' => 'required|date',
-                'email' => 'nullable|email',
+            'email' => 'nullable|email',
         ];
 
         if ($this->cover_image) {
@@ -94,29 +95,39 @@ class EventMain extends Component
 
     public function render()
     {
+        
+        
+        /*
         $user = auth()->user();
         $roleId = $user->role_id;
-        $userId = $user->id;        
+        $userId = $user->id;
 
-        if(Auth::user()->role_id==1 || Auth::user()->role_id==2){
-            $this->events = Event::all();
-        }else{
-            // Obtener IDs de eventos basados en roles
-            $eventIdsByRole = EventRole::where('role_id', $roleId)
-            ->pluck('event_id');
+                if (Auth::user()->role_id == 1 || Auth::user()->role_id == 2) {
+                    $this->events = Event::all();
+                } else {
+                    // Obtener IDs de eventos basados en roles
+                    $eventIdsByRole = EventRole::where('role_id', $roleId)
+                        ->pluck('event_id');
 
-            // Obtener eventos creados por el usuario
-            $eventIdsByCreator = Event::where('created_by', $userId)
-            ->pluck('id');
+                    // Obtener eventos creados por el usuario
+                    $eventIdsByCreator = Event::where('created_by', $userId)
+                        ->pluck('id');
 
-            // Combinar ambos conjuntos de eventos
-            $eventIds = $eventIdsByRole->merge($eventIdsByCreator)->unique();
+                    // Combinar ambos conjuntos de eventos
+                    $eventIds = $eventIdsByRole->merge($eventIdsByCreator)->unique();
 
-            // Obtener eventos basados en los IDs combinados
-            $this->events = Event::whereIn('id', $eventIds)
+                    // Obtener eventos basados en los IDs combinados
+                    $this->events = Event::whereIn('id', $eventIds)
+                        ->where('type', $this->event_type)
+                        ->get();
+                }*/
+
+        $this->events = Auth::user()->events()
             ->where('type', $this->event_type)
+            ->when($this->project_id !== null, function ($query) {
+                $query->where('project_id', $this->project_id);
+            })
             ->get();
-        }
 
         return view('livewire.event-main');
     }
@@ -129,7 +140,7 @@ class EventMain extends Component
             $coverImagePath = null;
             if ($this->cover_image)
                 $coverImagePath = $this->storeCoverImage($this->cover_image);
-            
+
             $eventData = [
                 'title' => $this->title,
                 'content' => $this->content,
@@ -145,34 +156,38 @@ class EventMain extends Component
                 'map' => $this->map,
                 'type' => $this->event_type,
             ];
-            
+
+            if($this->project_id){
+                $eventData['project_id'] = $this->project_id;
+            }
+
             if ($this->isEditing) {
-                
+
                 $event = Event::findOrFail($this->eventId);
-                if ($coverImagePath!=null && $coverImagePath != $event->cover_image) {
-                   
-                    Storage::delete('public/' . $event->cover_image);
+                if ($coverImagePath != null && $coverImagePath != $event->cover_image) {
+
+                    Storage::disk('public')->delete($event->cover_image);
                 }
-                if ($coverImagePath==null && $this->image_path==null && $event->cover_image!=null) {
-                   
-                    Storage::delete('public/' . $event->cover_image);
+                if ($coverImagePath == null && $this->image_path == null && $event->cover_image != null) {
+
+                    Storage::disk('public')->delete($event->cover_image);
                 }
-                if($coverImagePath==null){
+                if ($coverImagePath == null) {
                     $eventData['cover_image'] = $this->image_path;
                 }
 
-                $event->update($eventData);    
+                $event->update($eventData);
                 $event->categories()->sync($this->selected_categories);
 
-                $roles=[];
+                $roles = [];
 
                 if (empty($this->visibility)) {
                     $roles = [3, 4]; // Administradores, Gestores, Socios
                 } else {
                     $roles = [$this->visibility];
                 }
-                EventRole::where('event_id',$event->id)->delete();
-                if($roles){
+                EventRole::where('event_id', $event->id)->delete();
+                if ($roles) {
                     foreach ($roles as $role) {
                         EventRole::create([
                             'event_id' => $event->id,
@@ -188,14 +203,14 @@ class EventMain extends Component
                 $eventData['code'] = Str::random(15);
                 $event = Event::create($eventData);
                 $event->categories()->sync($this->selected_categories);
-                
+
                 if (empty($this->visibility)) {
                     $roles = [3, 4]; // Administradores, Gestores, Socios
                 } else {
                     $roles = [$this->visibility];
                 }
-                EventRole::where('event_id',$event->id)->delete();
-                if($roles){
+                EventRole::where('event_id', $event->id)->delete();
+                if ($roles) {
                     foreach ($roles as $role) {
                         EventRole::create([
                             'event_id' => $event->id,
@@ -215,20 +230,21 @@ class EventMain extends Component
         }
     }
 
-    public function edit($eventCode){
+    public function edit($eventCode)
+    {
         $user = auth()->user();
         $event = Event::where('code', $eventCode)->first();
-        
+
         if (!$event) {
             session()->flash('error', 'El evento no existe.');
             return;
         }
-        
+
         if ($event->created_by !== $user->id) {
             session()->flash('error', 'No tienes permiso para eliminar este evento.');
             return;
         }
-        
+
         $this->isEditing = true;
         $this->eventId = $event->id;
         $this->title = $event->title;
@@ -244,10 +260,10 @@ class EventMain extends Component
         $this->website = $event->website;
         $this->map = $event->map;
         $this->openCreateNewEvent = true;
-        
-        $this->selected_categories = $event->categories->pluck('id')->toArray(); 
+
+        $this->selected_categories = $event->categories->pluck('id')->toArray();
         $roles = EventRole::where('event_id', $event->id)->pluck('role_id')->toArray();
-    
+
         if (count($roles) > 1) {
             $this->visibility = null;
         } else {
@@ -255,9 +271,9 @@ class EventMain extends Component
         }
 
         $this->dispatch('tinymce-update', $this->content);
-       
+
     }
-  
+
     public function deleteImage()
     {
         $this->cover_image = null;
@@ -276,30 +292,37 @@ class EventMain extends Component
         $fullFilename = "{$randomName}.{$extension}";
         $counter = 1;
 
-        while (Storage::exists("public/{$directory}/{$fullFilename}")) {
+        // Verifica si el archivo ya existe en el disco público
+        while (Storage::disk('public')->exists("{$directory}/{$fullFilename}")) {
             $fullFilename = "{$randomName}-{$counter}.{$extension}";
             $counter++;
         }
 
-        $storedPath = $image->storeAs("public/{$directory}", $fullFilename);
+        // Almacena el archivo en el disco público
+        $storedPath = $image->storeAs($directory, $fullFilename, 'public');
 
-        return str_replace('public/', '', $storedPath);
+        // Devuelve la ruta relativa del archivo
+        return $storedPath;
     }
+  
     public function delete($eventCode)
     {
         $user = auth()->user();
         $event = Event::where('code', $eventCode)->first();
-        
+
         if (!$event) {
             session()->flash('error', 'El evento no existe.');
             return;
         }
-        
+
         if ($event->created_by !== $user->id) {
             session()->flash('error', 'No tienes permiso para eliminar este evento.');
             return;
         }
-        
+        if ($event->cover_image) {
+            $imagePath = $event->cover_image;
+            Storage::disk('public')->delete($imagePath);
+        }
         $event->delete();
         session()->flash('message', 'Evento eliminado exitosamente.');
     }
