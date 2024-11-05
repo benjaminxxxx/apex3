@@ -18,7 +18,16 @@
                             <x-tr class="{{ $chartdata->chart_id == $chartId ? 'bg-cyan-100' : '' }}">
                                 <x-th value="{{ $chartdata->title }}" />
                                 <x-th value="{{ $chartdata->project->name }}" />
-                                <x-th value="{{ $chartdata->chart_type == 1 ? 'General' : 'Socios' }}" />
+                                @php
+                                    $chartTypeLabel = match ($chartdata->chart_type) {
+                                        1 => 'General',
+                                        2 => 'Socios',
+                                        3 => 'Seguimiento de Inversión',
+                                        default => 'Desconocido',
+                                    };
+                                @endphp
+
+                                <x-th value="{{ $chartTypeLabel }}" />
                                 <x-th value="{{ $chartdata->showlabels == '0' ? 'No' : 'Si' }}" />
                                 <x-th value="{{ $chartdata->showlegend == '0' ? 'No' : 'Si' }}" />
                                 <td>
@@ -27,13 +36,20 @@
                                         <x-secondary-button wire:click="edit('{{ $chartdata->chart_id }}')">
                                             <i class="icon-pencil"></i>
                                         </x-secondary-button>
-                                        <x-secondary-button wire:click="showdata('{{ $chartdata->chart_id }}')">
-                                            <i class="icon-doc"></i>
-                                        </x-secondary-button>
-                                        @if($chartdata->hasData)
-                                        <x-button wire:click="showchart('{{ $chartdata->chart_id }}')">
-                                            <i class="icon-eye"></i>
-                                        </x-button>
+                                        @if ($chartdata->chart_type == 3)
+                                            <x-secondary-button
+                                                @click="$wire.dispatch('dialogDataInversion',{chartId:'{{ $chartdata->chart_id }}'})">
+                                                <i class="icon-doc"></i>
+                                            </x-secondary-button>
+                                        @else
+                                            <x-secondary-button wire:click="showdata('{{ $chartdata->chart_id }}')">
+                                                <i class="icon-doc"></i>
+                                            </x-secondary-button>
+                                        @endif
+                                        @if ($chartdata->hasData)
+                                            <x-button wire:click="showchart('{{ $chartdata->chart_id }}')">
+                                                <i class="icon-eye"></i>
+                                            </x-button>
                                         @endif
                                         <x-danger-button wire:confirm="Seguro que desea eliminar este gráfico??"
                                             wire:click="delete('{{ $chartdata->chart_id }}')">
@@ -72,9 +88,10 @@
                     <x-select wire:model="selectedChartType" wire:change="updateChartType">
                         <option value="">Seleccionar</option>
                         <option value="1">Progreso del proyecto</option>
-                        @if($selectedProject && $projectCountPartners!=0)
-                        <option value="2">Progreso de cada socio dentro de un proyecto</option>
+                        @if ($selectedProject && $projectCountPartners != 0)
+                            <option value="2">Progreso de cada socio dentro de un proyecto</option>
                         @endif
+                        <option value="3">Seguimiento de inversión</option>
                     </x-select>
                     <x-input-error for="selectedChartType" />
                 </div>
@@ -243,7 +260,8 @@
 
                 <div class="mt-4">
                     <x-label for="chart_title">Título del Gráfico</x-label>
-                    <x-input type="text" id="chart_title" wire:model="chart_title" name="chart_title" onkeyup="updateChartConfig()" />
+                    <x-input type="text" id="chart_title" wire:model="chart_title" name="chart_title"
+                        onkeyup="updateChartConfig()" />
                 </div>
                 <div class="mt-4">
                     <x-label for="chart_title">Mensaje de tu publicación</x-label>
@@ -251,7 +269,8 @@
                 </div>
                 <div class="mt-4">
                     <x-label>Tipo de gráfico</x-label>
-                    <x-select name="chart_type" wire:model="chartType" id="chartType" onchange="updateChartConfig()">
+                    <x-select name="chart_type" wire:model="chartType" id="chartType"
+                        onchange="updateChartConfig()">
                         <option value="bar">Barras</option>
                         <option value="line">Líneas</option>
                         <option value="radar">Radar</option>
@@ -261,14 +280,14 @@
                     </x-select>
                 </div>
                 <div class="mt-4">
-                    <x-label for="showlabels"> <input type="checkbox" wire:model="showlabels" id="showlabels" name="showlabels"
-                            onchange="updateChartConfig()"> Mostrar
+                    <x-label for="showlabels"> <input type="checkbox" wire:model="showlabels" id="showlabels"
+                            name="showlabels" onchange="updateChartConfig()"> Mostrar
                         Etiquetas</x-label>
 
                 </div>
                 <div class="mt-4">
-                    <x-label for="showlegend"> <input type="checkbox" wire:model="showlegend" id="showlegend" name="showlegend"
-                            onchange="updateChartConfig()"> Mostrar
+                    <x-label for="showlegend"> <input type="checkbox" wire:model="showlegend" id="showlegend"
+                            name="showlegend" onchange="updateChartConfig()"> Mostrar
                         Leyenda</x-label>
 
                 </div>
@@ -291,127 +310,127 @@
         </x-toast>
     @endif
 
-    
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const ctx = document.getElementById('myChartLive').getContext('2d');
-        let chartInstance;
 
-        function generarDatosParaChart(rowHeaders, myData) {
-            const colors = [
-                '#f59e0b',
-                '#8b5cf6',
-                '#d946ef',
-                '#3b82f6',
-                '#84cc16',
-            ];
-            const chartData = [];
-            for (let i = 0; i < rowHeaders.length; i++) {
-                chartData.push({
-                    label: rowHeaders[i],
-                    data: myData[i],
-                    borderWidth: 1,
-                    backgroundColor: colors[i % colors.length]
-                });
-            }
-            return chartData;
-        }
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const ctx = document.getElementById('myChartLive').getContext('2d');
+                let chartInstance;
 
-        const config = {
-            type: 'bar',  // Tipo de gráfico por defecto
-            data: {},
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: ''
+                function generarDatosParaChart(rowHeaders, myData) {
+                    const colors = [
+                        '#f59e0b',
+                        '#8b5cf6',
+                        '#d946ef',
+                        '#3b82f6',
+                        '#84cc16',
+                    ];
+                    const chartData = [];
+                    for (let i = 0; i < rowHeaders.length; i++) {
+                        chartData.push({
+                            label: rowHeaders[i],
+                            data: myData[i],
+                            borderWidth: 1,
+                            backgroundColor: colors[i % colors.length]
+                        });
                     }
-                },
-                scales: {
-                    x: {
-                        display: true
-                    }
+                    return chartData;
                 }
-            }
-        };
 
-        window.updateChartConfig = function() {
-            const chartType = document.getElementById('chartType').value;
-            const showLabels = document.getElementById('showlabels').checked;
-            const showLegend = document.getElementById('showlegend').checked;
-            const chartTitle = document.getElementById('chart_title').value;
-
-            config.type = chartType;
-            if (chartType === 'radar' || chartType === 'polarArea') {
-                config.options.scales = {};  // Clear default scales
-            } else {
-                config.options.scales = {
-                    x: {
-                        display: showLabels
-                    },
-                    y: {
-                        display: true
+                const config = {
+                    type: 'bar', // Tipo de gráfico por defecto
+                    data: {},
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true
+                            }
+                        }
                     }
                 };
-            }
-            config.options.plugins.legend.display = showLegend;
-            config.options.plugins.title.text = chartTitle;
-            //config.options.scales.x.display = showLabels;
 
-            // Clean up chart before creating a new one
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
+                window.updateChartConfig = function() {
+                    const chartType = document.getElementById('chartType').value;
+                    const showLabels = document.getElementById('showlabels').checked;
+                    const showLegend = document.getElementById('showlegend').checked;
+                    const chartTitle = document.getElementById('chart_title').value;
 
-            // Create a new chart
-            chartInstance = new Chart(ctx, config);
-        }
+                    config.type = chartType;
+                    if (chartType === 'radar' || chartType === 'polarArea') {
+                        config.options.scales = {}; // Clear default scales
+                    } else {
+                        config.options.scales = {
+                            x: {
+                                display: showLabels
+                            },
+                            y: {
+                                display: true
+                            }
+                        };
+                    }
+                    config.options.plugins.legend.display = showLegend;
+                    config.options.plugins.title.text = chartTitle;
+                    //config.options.scales.x.display = showLabels;
 
-        function updateChart(columnsHeader, rowHeader, dataAll) {
-            const card = document.querySelector('.panel-grafico');
-            if (card && card.classList.contains('hidden')) {
-                card.classList.remove('hidden');
-            }
+                    // Clean up chart before creating a new one
+                    if (chartInstance) {
+                        chartInstance.destroy();
+                    }
 
-            const headers = columnsHeader;
-            const rowHeaders = rowHeader;
-            const totalData = generarDatosParaChart(rowHeaders, dataAll);
+                    // Create a new chart
+                    chartInstance = new Chart(ctx, config);
+                }
 
-            config.data.labels = headers;
-            config.data.datasets = totalData;
+                function updateChart(columnsHeader, rowHeader, dataAll) {
+                    const card = document.querySelector('.panel-grafico');
+                    if (card && card.classList.contains('hidden')) {
+                        card.classList.remove('hidden');
+                    }
 
-            // Clean up chart before creating a new one
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
+                    const headers = columnsHeader;
+                    const rowHeaders = rowHeader;
+                    const totalData = generarDatosParaChart(rowHeaders, dataAll);
 
-            // Create a new chart
-            chartInstance = new Chart(ctx, config);
-        }
+                    config.data.labels = headers;
+                    config.data.datasets = totalData;
 
-        Livewire.on('loadChart', (data) => {
-            const columnsHeader = data.columnsHeader;
-            const rowHeader = data.rowHeader;
-            const dataAll = data.data;
+                    // Clean up chart before creating a new one
+                    if (chartInstance) {
+                        chartInstance.destroy();
+                    }
 
-            updateChart(columnsHeader, rowHeader, dataAll);
-        });
-        Livewire.on('hideChartView', () => {
-            const card = document.querySelector('.panel-grafico');
-            if (card) {
-                card.classList.add('hidden');
-            }
-        });
-        
-        // Initialize the chart with default settings
-        updateChartConfig();
-    });
-</script>
-@endpush
+                    // Create a new chart
+                    chartInstance = new Chart(ctx, config);
+                }
+
+                Livewire.on('loadChart', (data) => {
+                    const columnsHeader = data.columnsHeader;
+                    const rowHeader = data.rowHeader;
+                    const dataAll = data.data;
+
+                    updateChart(columnsHeader, rowHeader, dataAll);
+                });
+                Livewire.on('hideChartView', () => {
+                    const card = document.querySelector('.panel-grafico');
+                    if (card) {
+                        card.classList.add('hidden');
+                    }
+                });
+
+                // Initialize the chart with default settings
+                updateChartConfig();
+            });
+        </script>
+    @endpush
 </div>

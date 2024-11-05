@@ -1,0 +1,6 @@
+runtime: nodejs20  # Puedes cambiarlo dependiendo de la versión de Node.js que estés usando
+
+instance_class: F1  # Tipo de instancia, puedes ajustarlo según tu necesidad
+
+env_variables:
+  NODE_ENV: 'production'

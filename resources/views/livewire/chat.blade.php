@@ -183,7 +183,7 @@
                 const userAliasData = "{{ Auth::user()->user_code }}";
                 const notificationSound = document.getElementById('notification-sound');
 
-                const socket = io('https://perudevsolutions.com', {
+                const socket = io('https://apexally.ew.r.appspot.com/', {
                     query: `user=${encodeURIComponent(userAliasData)}`
                 });
 

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Illuminate\Database\QueryException;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Auth;
 use App\Models\Project;
@@ -19,6 +20,7 @@ use DB;
 
 class ChartGroup extends Component
 {
+    use LivewireAlert;
     public $chart;
     public $chartId;
     public $selectedChartType;

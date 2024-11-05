@@ -109,7 +109,7 @@
 
 
     <link rel="stylesheet" href="{{ asset('css/handsontable.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 
     @livewireScripts
     @stack('scripts')

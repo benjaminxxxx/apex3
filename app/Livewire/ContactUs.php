@@ -51,7 +51,7 @@ class ContactUs extends Component
             );
             session()->flash('message', 'Tu mensaje ha sido enviado exitosamente.');
         } catch (\Exception $ex) {
-            session()->flash('message', 'Error.' . $ex->message);
+            session()->flash('message', 'Error.' . $ex->getMessage());
         }
         $this->reset();
 
