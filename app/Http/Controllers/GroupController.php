@@ -20,6 +20,11 @@ class GroupController extends Controller
             return view('group.denied');
         }
 
-        return view('group.panel', ['group_id' => $group->id]);
+        $project_id = $group->project_id;
+        
+        return view('group.panel', [
+            'group_id' => $group->id,
+            'project_id' => $project_id
+        ]);
     }
 }

@@ -9,9 +9,17 @@ class Group extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name','slug', 'description', 'manager_id', 'project_id'
+        'name',
+        'slug',
+        'description',
+        'manager_id',
+        'project_id',
+        'administrator_id'
     ];
-
+    public function inversiones()
+    {
+        return $this->hasMany(Inversion::class, 'grupo_id');
+    }
     // Relationships
     public function manager()
     {

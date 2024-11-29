@@ -7,7 +7,7 @@
             Administración de Gráficos Estadisticos
         </h2>
     </x-slot>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <livewire:chart-group/>
     <livewire:dialog-data-inversion/>
 </x-app-layout>

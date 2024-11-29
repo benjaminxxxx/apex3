@@ -74,6 +74,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function tieneInversionesEnGrupo($projecto_id,$grupo_id)
+    {
+        $inversor = $this->id;
+        return Inversion::where('inversor_id',$inversor)
+        ->where('projecto_id',$projecto_id)
+        ->where('grupo_id',$grupo_id)
+        ->get()
+        ->count()>0;
+    }
     public static function managers()
     {
         return self::where('role_id', 3)->get();

@@ -107,7 +107,7 @@
         
             <x-slot name="form">
                 <div class="col-span-6">
-                    <x-label for="name" value="Nombre del grupo" />
+                    <x-label for="name" value="Nombre del Proyecto" />
                     <x-input id="name" type="text" class="mt-1 block w-full" wire:model="name" autocomplete="name" />
                     <x-input-error for="name" class="mt-2" />
                 </div>

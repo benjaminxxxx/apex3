@@ -1,6 +1,6 @@
 <div>
     <x-card>
-        <x-h3>{{ __('Search and add new Partner') }}</x-h3>
+        <x-h3>Busca y agrega un nuevo socio</x-h3>
         <div class="flex items-start mt-2">
             <div class="relative">
                 <x-input type="text" wire:model="user_search" wire:keyup="search" placeholder="Nombre del usuario" />
@@ -39,7 +39,7 @@
                 @endif
             </div>
             <x-button wire:click="openForm" type="submit" class="ml-4">
-                {{ __('Register partner') }}
+                Registrar Socio
             </x-button>
         </div>
     </x-card>
@@ -59,10 +59,16 @@
                     <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{{ $member->name }}</h5>
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ $userRoleName }}</span>
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ $member->emai }}</span>
-                    <div class="flex mt-4 md:mt-6">
+                    <div class="mt-4 md:mt-6 text-center">
+                        <x-button class="mb-3" @Click="$wire.dispatch('crearInversion',{inversor_id:{{ $member->id }},projecto_id:{{ $project_id }},grupo_id:{{ $group_id }}})">
+                            Registrar inversión
+                        </x-button>
+                        @if (!$member->tieneInversionesEnGrupo($project_id,$group_id))
                         <x-danger-button class="" wire:click="destroyFromGroup({{ $member->id }})">
                             Eliminar del grupo
-                        </x-danger-button>
+                        </x-danger-button> 
+                        @endif
+                        
                     </div>
                 </div>
             </x-card>

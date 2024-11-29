@@ -28,20 +28,14 @@ class GroupMembers extends Component
     public $email;
     public $password;
     public $role_id;
+    public $project_id;
+    protected $listeners = ['inversionRegistrada'=>'$refresh'];
     public function mount()
     {
         $this->roles = Role::where(['id' => '4'])->get();
         if ($this->roles) {
             $this->role_id = '4';
         }
-        /*
-        if (Auth::user()->role_id == '2') {
-            
-            $this->roles = Role::where(['id'=>'3'])->get();
-            if ($this->roles) {
-                $this->role_id = '3';
-            }
-        }*/
 
     }
     public function render()

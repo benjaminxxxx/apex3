@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Inversion;
 use Livewire\Component;
 use App\Models\Group;
 
@@ -11,10 +12,20 @@ class GroupPanel extends Component
     public $name;
     public $description;
     public $group_id;
+    public $project_id;
+    public $inversiones;
+    protected $listeners = ['inversionRegistrada'=>'obtenerInversiones'];
     public function mount(){
         $this->group = Group::find($this->group_id);
         $this->name =  $this->group->name;
         $this->description =  $this->group->description;
+        $this->obtenerInversiones();
+    }
+    public function obtenerInversiones(){
+        if(!$this->group){
+            return;
+        }
+        $this->inversiones = $this->group->inversiones()->orderBy('created_at','desc')->get();
     }
     public function render()
     {

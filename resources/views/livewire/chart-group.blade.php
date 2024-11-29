@@ -17,7 +17,7 @@
                         @foreach ($charts as $chartdata)
                             <x-tr class="{{ $chartdata->chart_id == $chartId ? 'bg-cyan-100' : '' }}">
                                 <x-th value="{{ $chartdata->title }}" />
-                                <x-th value="{{ $chartdata->project->name }}" />
+                                <x-th value="{{ $chartdata->project? $chartdata->project->name:'-' }}" />
                                 @php
                                     $chartTypeLabel = match ($chartdata->chart_type) {
                                         1 => 'General',

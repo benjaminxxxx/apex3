@@ -6,9 +6,11 @@
     <x-slot name="header">
     </x-slot>
     <x-two-columns-content-aside>
+        
         <x-slot name="content">
             <x-max-content>
-                <livewire:group-panel :group_id="$group_id"/>
+                <livewire:group-panel :group_id="$group_id" :project_id="$project_id"/>
+                <livewire:registro-inversion-socio-proyecto-component/>
             </x-max-content>
         </x-slot>
         <x-slot name="aside">
